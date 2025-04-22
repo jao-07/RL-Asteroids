@@ -24,7 +24,8 @@ void RigidBodyComponent::ApplyForce(const Vector2 &force) {
 
     // TODO 1. (~1 linha): Adicione à aceleração do objeto (mAcceleration) a forca (force) passada como parâmetro,
     //  multiplicando pelo inverso pela massa (mMass) do objeto.
-
+    mAcceleration.x += force.x * 1.0/mMass;
+    mAcceleration.y += force.y * 1.0/mMass;
 }
 
 void RigidBodyComponent::Update(float deltaTime)
@@ -37,6 +38,8 @@ void RigidBodyComponent::Update(float deltaTime)
 
     // TODO 2.1 (2 linhas): Atualize a velocidade (mVelocity) e a posição (position) do objeto utilizando
     //  o método de Euler semi-implícito.
+    mVelocity += mAcceleration * deltaTime;
+    position += mVelocity * deltaTime;
 
     ScreenWrap(position);
 
@@ -45,15 +48,19 @@ void RigidBodyComponent::Update(float deltaTime)
     // TODO 2.2 (~3 linhas): Utilize a função Math::NearZero para verificar se o comprimento do vetor
     //  velocidade (mVelocity) está próximo de zero. Se estiver, use a função mVelocity.Set() para
     //  forçar velocidade zero. Isso evita movimentos muito pequenos.
+    if (Math::NearZero(mVelocity.x) && Math::NearZero(mVelocity.y)) {
+        mVelocity.Set(0, 0);
+    }
 
     // TODO 2.3 (1 linhas): Utilize a função mAcceleration.Set() para reinicializar a aceleração para zero.
+    mAcceleration.Set(0, 0);
 
 
     float rot = mOwner->GetRotation();
 
     // TODO 2.4 (1 linha): Some à rotação atual do objeto (rot) a velocidade angular (mAngularSpeed)
     //  multiplicada pelo deltaTime.
-
+    rot += mAngularSpeed * deltaTime;
 
     mOwner->SetRotation(rot);
 }
@@ -68,11 +75,23 @@ void RigidBodyComponent::ScreenWrap(Vector2 &position)
     //  altere sua posição horizontal para ser igual à largura da tela. Caso contrário, verifique
     //  se o objeto saiu pelo lado direito. Se tiver saído, altere sua posição horizontal para ser
     //  igual a zero.
+    if (position.x < 0) {
+        position.x = mOwner->GetGame()->GetWindowWidth();
+    }
+    else if (position.x > mOwner->GetGame()->GetWindowWidth()) {
+        position.x = 0;
+    }
 
 
     // TODO 3.2 (~6 linhas): Verifique se o objeto saiu por cima da tela. Se tiver saído,
     //  altere sua posição vertical para ser igual à altura da tela. Caso contrário, verifique
     //  se o objeto saiu por baixo. Se tiver saído, altere sua posição vertical para ser
     //  igual a zero.
+    if (position.y < 0) {
+        position.y = mOwner->GetGame()->GetWindowHeight();
+    }
+    else if (position.y > mOwner->GetGame()->GetWindowHeight()) {
+        position.y = 0;
+    }
 
 }

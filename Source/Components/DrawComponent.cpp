@@ -30,11 +30,14 @@ void DrawComponent::DrawPolygon(SDL_Renderer *renderer, std::vector<Vector2>& ve
     // TODO 1.1 (~3 linhas): percorra do primeiro até o penúltimo vértices, utilizando a função
     //  SDL_RenderDrawLine para desenhar linhas entre os vértices i e i+1. Some a posição do dono
     //  do componente (pos) a cada vértice.
+    for (int i=0; i<vertices.size()-1; i++) {
+        SDL_RenderDrawLine(renderer, vertices[i].x + pos.x, vertices[i].y + pos.y, vertices[i+1].x + pos.x, vertices[i+1].y + pos.y);
+    }
 
 
     // TODO 1.2 (~1 linha): Utilize a função SDL_RenderDrawLine para desenhar uma linha entre o último
     //  e o primeiro vértice. Some a posição do dono do componente (pos) a cada vértice.
-
+    SDL_RenderDrawLine(renderer, vertices.back().x + pos.x, vertices.back().y + pos.y, vertices[0].x + pos.x, vertices[0].y + pos.y);
 }
 
 void DrawComponent::DrawCircle(SDL_Renderer *renderer, const Vector2& center, const float radius, const int numVertices)
@@ -47,6 +50,7 @@ void DrawComponent::DrawCircle(SDL_Renderer *renderer, const Vector2& center, co
 
     // TODO 2.1 (~1 linha): inicialize variável angle (float) com zero. Ela será
     //  utilizada para percorrer o arco de uma circunferência em intervalos angulares de tamanho fixo.
+    float angle = 0.0f;
 
     // TODO 2.2 (~6 linhas): Repita o seguinte procedimento para um dado número de vértices (numVertices):
     //  (a) Calcule a coordenada x do novo vértice multiplicando o raio da circunferência (radius) pelo cosseno
@@ -54,6 +58,12 @@ void DrawComponent::DrawCircle(SDL_Renderer *renderer, const Vector2& center, co
     //  (b) Calcule a coordenada y da mesma forma, porém multiplicando pelo seno do ângulo corrente;
     //  (c) Some o vetor (x,y) com o centro (center) e adicione o vetor resultante ao conjunto de vértices (vertices);
     //  (d) Incremente o ângulo corrente por 2*PI dividido pelo número de vértices (numVertices).
+    for (int i=0; i<numVertices; i++) {
+        float x = radius * cos(angle);
+        float y = radius * sin(angle);
+        vertices.push_back(Vector2(center.x + x, center.y + y));
+        angle = angle + 2 * Math::Pi / numVertices;
+    }
 
     DrawComponent::DrawPolygon(renderer, vertices);
 }
@@ -66,16 +76,24 @@ void DrawComponent::Draw(SDL_Renderer *renderer)
 
     // TODO 3.1 (~1 linha): Utilize a função Matrix3::CreateRotation para criar uma matriz de rotação com o ângulo
     //  do dono desse componente (-mOwner->GetRotation()).
+    const Matrix3 RotationMatrix = Matrix3::CreateRotation(mOwner->GetRotation());
 
     // TODO 3.2 (~4 linhas): Percorra os vértices desse componente (mVertices), multiplicando-os pela matriz de
     //  rotação com a função Vector2::Transform. Adicione o vetor transformado à um vetor temporária de vertices.
+    std::vector<Vector2> verticesTemp;
+    for (auto vertice: mVertices) {
+        verticesTemp.push_back(Vector2::Transform(vertice, RotationMatrix));
+    }
 
     // TODO 3.3 (~1 linha): Utilize a função SDL_SetRenderDrawColor para alterar a cor de desenho para branco.
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
     // TODO 3.4 (~1 linha): Chame a função DrawPolygon para desenhar o conjunto de vértices transformado.
+    DrawPolygon(renderer, verticesTemp);
 
     // TODO 3.5 (~4 linhas): Utilize a função DrawCircle para desenhar o círculo de colisão desse objeto.
     //  Antes de desenhar, altere a cor para verde com a função SDL_SetRenderDrawColor. Esse trecho
     //  de código será útil para debugar a detecção de colisão.
-
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    DrawCircle(renderer, Vector2::Zero, mOwner->GetComponent<CircleColliderComponent>()->GetRadius());
 }

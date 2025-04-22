@@ -31,8 +31,12 @@ bool CircleColliderComponent::Intersect(const CircleColliderComponent& c) const
     //  e o do círculo c (c.GetCenter()). Primeiro, subtraia o centro do primeiro pelo do segundo e
     //  armazene o resultado em um vetor diff. Depois use o método diff.LengthSq() para calcular a distância
     //  quadrada entre os centros e armazene o resultado em um escalar distSq.
+    Vector2 diff = GetCenter() - c.GetCenter();
+    float distSq = diff.LengthSq();
 
     // TODO 1.2 (2 linhas): calcule o quadrado das somas dos raios e armazene o resultado em um escalar radiiSq.
+    float radiiSq = c.GetRadius() * c.GetRadius() + mRadius * mRadius;
 
     // TODO 1.3 (1 linha): retorne verdadeiro se distSq é menor ou igual a radiiSq ou falso caso contrário.
+    return distSq <= radiiSq;
 }
