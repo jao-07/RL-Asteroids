@@ -25,6 +25,8 @@ add_executable(${PROJECT_NAME}
         Source/Components/CircleColliderComponent.cpp
         Source/Components/CircleColliderComponent.h
         Source/Actors/Laser.cpp
-        Source/Actors/Laser.h)
+        Source/Actors/Laser.h
+        Source/Actors/Particle.cpp
+        Source/Actors/Particle.h)
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})

@@ -14,6 +14,7 @@
 #include "Components/DrawComponent.h"
 #include "Components/RigidBodyComponent.h"
 #include "Random.h"
+#include "Actors/Particle.h"
 
 Game::Game(int windowWidth, int windowHeight)
         :mWindow(nullptr)
@@ -189,6 +190,16 @@ void Game::UpdateActors(float deltaTime)
     }
 }
 
+void Game::CreateParticles(Asteroid *ast, float min, float max) {
+    for (int i = 0; i < 20; i++) {
+        Vector2 dir = Random::GetVector(Vector2(-1.0f, -1.0f), Vector2(1.0f, 1.0f));
+        dir.Normalize();
+        Vector2 force = dir * Random::GetFloatRange(min, max);
+
+        new Particle(this, ast->GetPosition(), force);
+    }
+}
+
 void Game::AddAsteroid(Asteroid* ast)
 {
     // --------------
@@ -220,6 +231,9 @@ void Game::RemoveAsteroid(Asteroid* ast)
             mAsteroids.pop_back();
 
             SDL_Log("Asteroid Removed - mAsteroids size: %d", mAsteroids.size());
+
+            CreateParticles(ast, 600, 1000);
+
         }
         else
             SDL_Log("Attempting to remove asteroid not in list");
@@ -239,6 +253,8 @@ void Game::RemoveAsteroid(Asteroid* ast)
             mAsteroidsSmall.pop_back();
 
             SDL_Log("Asteroid Removed - mAsteroidsSmall size: %d", mAsteroidsSmall.size());
+
+            CreateParticles(ast, 300, 500);
         }
         else
             SDL_Log("Attempting to remove asteroid not in list");

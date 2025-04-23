@@ -10,6 +10,7 @@
 #include <SDL.h>
 #include <vector>
 #include "Actors/Ship.h"
+#include "Actors/Asteroid.h"
 #include <typeinfo>
 
 enum class GameState
@@ -29,6 +30,7 @@ public:
     void Quit() { mIsRunning = false; }
 
     void CreateAsteroids();
+    void CreateParticles(Asteroid *ast, float min, float max);
 
     // Actor functions
     void InitializeActors();
