@@ -10,6 +10,13 @@
 #include <SDL.h>
 #include <vector>
 #include "Actors/Ship.h"
+#include <typeinfo>
+
+enum class GameState
+{
+    Playing,
+    Waiting
+};
 
 class Game
 {
@@ -20,6 +27,8 @@ public:
     void RunLoop();
     void Shutdown();
     void Quit() { mIsRunning = false; }
+
+    void CreateAsteroids();
 
     // Actor functions
     void InitializeActors();
@@ -39,6 +48,7 @@ public:
     void AddAsteroid(class Asteroid* ast);
     void RemoveAsteroid(class Asteroid* ast);
     std::vector<class Asteroid*>& GetAsteroids() { return mAsteroids; }
+    std::vector<class Asteroid*>& GetAsteroidsSmall() { return mAsteroidsSmall; }
 
 private:
     void ProcessInput();
@@ -70,4 +80,9 @@ private:
     // Game-specific
     class Ship* mShip;
     std::vector<class Asteroid*> mAsteroids;
+    std::vector<class Asteroid*> mAsteroidsSmall;
+
+    //Track the pauses between the asteroids waves
+    GameState mGameState;
+    Uint32 mPauseTime;
 };

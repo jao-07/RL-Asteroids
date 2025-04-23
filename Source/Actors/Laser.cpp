@@ -64,4 +64,14 @@ void Laser::OnUpdate(float deltaTime)
             break;
         }
     }
+
+    std::vector<Asteroid*> asteroidsSmall = mGame->GetAsteroidsSmall();
+    for (int i=0; i<asteroidsSmall.size(); i++) {
+        auto *ast = asteroidsSmall[i]->GetComponent<CircleColliderComponent>();
+        if (this->mCircleColliderComponent->Intersect(*ast)) {
+            SetState(ActorState::Destroy);
+            asteroidsSmall[i]->SetState(ActorState::Destroy);
+            break;
+        }
+    }
 }

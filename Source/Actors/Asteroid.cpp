@@ -11,32 +11,49 @@
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/DrawComponent.h"
 
-Asteroid::Asteroid(Game* game, const float radius, const int numVertices, const float forwardForce)
+Asteroid::Asteroid(Game* game, AsteroidSize size, Vector2 position, const int numVertices, const float forwardForce)
         :Actor(game)
         ,mRigidBodyComponent(nullptr)
         ,mDrawComponent(nullptr)
+        ,mCircleColliderComponent(nullptr)
+        ,mSize(size)
 {
     // --------------
     // TODO - PARTE 3
     // --------------
 
-    // Create a circle with numVertices
-    std::vector<Vector2> vertices = GenerateVertices(numVertices, radius);
+    Vector2 randStartingForce = Vector2::Zero;
+    float averageLength = 0.0f;
+    std::vector<Vector2> vertices;
 
-    // Calculate average vertices length to be the collider radius
-    float averageLength = CalculateAverageVerticesLength(vertices);
+    if (size == AsteroidSize::Large) {
+        // Create a circle with numVertices
+        vertices = GenerateVertices(numVertices, 80);
 
-    // TODO 1.1 (~3 linhas): Utilize a função Random::GetVector para gerar uma posição aleatória inicial para
-    //  o asteroide. Garanta que essa posição inicial não resultará em uma colisão com a configuração inicial
-    //  da nave. Utilize a função SetPosition para alterar a posição inicial do asteroide com a posição gerada.
-    Vector2 pos = Random::GetVector(Vector2::Zero, Vector2(mGame->GetWindowWidth(), mGame->GetWindowHeight()));
-    while (!(pos.y > (mGame->GetWindowHeight() - 200) || pos.y < 200))
-        pos = Random::GetVector(Vector2::Zero, Vector2(mGame->GetWindowWidth(), mGame->GetWindowHeight()));
+        // Calculate average vertices length to be the collider radius
+        averageLength = CalculateAverageVerticesLength(vertices);
 
-    SetPosition(pos);
+        //Set the position of the asteroid so that there is no collision with the ship in the instance
+         Vector2 pos = Random::GetVector(Vector2::Zero, Vector2(mGame->GetWindowWidth(), mGame->GetWindowHeight()));
+         while (!(pos.y > (mGame->GetWindowHeight() - 200) || pos.y < 200))
+             pos = Random::GetVector(Vector2::Zero, Vector2(mGame->GetWindowWidth(), mGame->GetWindowHeight()));
+        SetPosition(pos);
 
-    // Generate random starting force
-    Vector2 randStartingForce = GenerateRandomStartingForce(700.0f, 1000.0f);
+        // Generate random starting force
+        randStartingForce = GenerateRandomStartingForce(1000.0f, 1500.0f);
+    }
+    else {
+        // Create a circle with numVertices
+        vertices = GenerateVertices(numVertices, 40);
+
+        // Calculate average vertices length to be the collider radius
+        averageLength = CalculateAverageVerticesLength(vertices);
+
+        SetPosition(position);
+
+        // Generate random starting force
+        randStartingForce = GenerateRandomStartingForce(2000.0f, 2500.0f);
+    }
 
     // TODO 1.3 (3 linhas): Instancie os componentes DrawComponent, RigidBodyComponent e CircleColliderComponent.
     //  Armazene esses componentes nos ponteiros mDrawComponent, mRigidBodyComponent e mCircleColliderComponent,

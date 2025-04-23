@@ -49,6 +49,13 @@ Ship::Ship(Game* game,
     mCircleColliderComponent = new CircleColliderComponent(this, mHeight/2);
 }
 
+void Ship::Reset() {
+    mRigidBodyComponent->SetAcceleration(Vector2(0, 0));
+    mRigidBodyComponent->SetVelocity(Vector2(0, 0));
+    mRigidBodyComponent->SetAngularSpeed(0);
+    SetPosition(Vector2(mGame->GetWindowWidth() / 2.0f, mGame->GetWindowHeight() / 2.0f));
+}
+
 void Ship::OnProcessInput(const uint8_t* state)
 {
     // --------------
@@ -95,7 +102,7 @@ void Ship::OnProcessInput(const uint8_t* state)
         l->GetComponent<RigidBodyComponent>()->ApplyForce(GetForward() * 3000.f);
 
         // TODO 2.4.5 (1 linha): Reinicialize o tempo de resfriamento do laser para um quarto de segundo (0.25).
-        mLaserCooldown = 0.25f;
+        mLaserCooldown = 0.5f;
     }
 
     // TODO 2.5 (1 linha): Altere a velocidade angular (SetAngularSpeed) com o novo valor calculado (angularSpeed).
@@ -136,6 +143,14 @@ void Ship::OnUpdate(float deltaTime)
     std::vector<Asteroid*> asteroids = mGame->GetAsteroids();
     for (int i=0; i<asteroids.size(); i++) {
         auto *ast = asteroids[i]->GetComponent<CircleColliderComponent>();
+        if (this->mCircleColliderComponent->Intersect(*ast)) {
+            mGame->Quit();
+        }
+    }
+
+    std::vector<Asteroid*> asteroidsSmall = mGame->GetAsteroidsSmall();
+    for (int i=0; i<asteroidsSmall.size(); i++) {
+        auto *ast = asteroidsSmall[i]->GetComponent<CircleColliderComponent>();
         if (this->mCircleColliderComponent->Intersect(*ast)) {
             mGame->Quit();
         }
