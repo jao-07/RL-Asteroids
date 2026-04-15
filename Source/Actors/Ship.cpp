@@ -30,15 +30,17 @@ Ship::Ship(Game* game,
 
     // TODO 1.1 (~3 linhas): Crie 3 vértices (Vector2) considerando o centro da nave como origem e o
     //  atributo mHeight como altura do triângulo. Por exemplo: v1 = (-h,h/2), v2 = (h, 0) e v3 = (-h/2)
-    Vector2 vert1 = Vector2(-mHeight, mHeight/2);
+    Vector2 vert1 = Vector2(-mHeight/2, mHeight/1.5);
     Vector2 vert2 = Vector2(mHeight, 0);
-    Vector2 vert3 = Vector2(-mHeight, -mHeight/2);
+    Vector2 vert3 = Vector2(-mHeight/2, -mHeight/1.5);
+    Vector2 vert4 = Vector2(-mHeight/4, 0);
 
     // TODO 1.2 (~4 linhas): Adicione esses 3 vértices end um container std::vector.
     std::vector<Vector2> verts;
     verts.push_back(vert1);
     verts.push_back(vert2);
     verts.push_back(vert3);
+    verts.push_back(vert4);
 
     // TODO 1.3 (3 linhas): Instancie os componentes DrawComponent, RigidBodyComponent e CircleColliderComponent.
     //  Armazene esses componentes nos ponteiros mDrawComponent, mRigidBodyComponent e mCircleColliderComponent,
@@ -46,7 +48,7 @@ Ship::Ship(Game* game,
     //  DrawComponente. E, para o CircleColliderComponent, passe a metade da altura da nave como raio de colisão.
     mDrawComponent = new DrawComponent(this, verts);
     mRigidBodyComponent = new RigidBodyComponent(this);
-    mCircleColliderComponent = new CircleColliderComponent(this, mHeight/2);
+    mCircleColliderComponent = new CircleColliderComponent(this, mHeight/1.5);
 }
 
 void Ship::Reset() {

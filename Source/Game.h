@@ -12,11 +12,21 @@
 #include "Actors/Ship.h"
 #include "Actors/Asteroid.h"
 #include <typeinfo>
+#include <algorithm>
+#include <cmath>
 
 enum class GameState
 {
     Playing,
     Waiting
+};
+
+enum class Action {
+    Right,
+    Left,
+    Shot,
+    Forward,
+    Nothing
 };
 
 class Game
@@ -49,8 +59,12 @@ public:
     // Game-specific (add/remove asteroid)
     void AddAsteroid(class Asteroid* ast);
     void RemoveAsteroid(class Asteroid* ast);
-    std::vector<class Asteroid*>& GetAsteroids() { return mAsteroids; }
-    std::vector<class Asteroid*>& GetAsteroidsSmall() { return mAsteroidsSmall; }
+    std::vector<class Asteroid*>& GetAsteroids() { return mBigAsteroids; }
+    std::vector<class Asteroid*>& GetAsteroidsSmall() { return mSmallAsteroids; }
+    static float GetWrappedDelta(float p1, float p2, float limit);
+    float GetWrappedDistanceSq(const Actor* a, const Actor* b) const;
+    void orderAsteroids();
+
 
 private:
     void ProcessInput();
@@ -81,10 +95,15 @@ private:
 
     // Game-specific
     class Ship* mShip;
+    std::vector<class Asteroid*> mBigAsteroids;
+    std::vector<class Asteroid*> mSmallAsteroids;
     std::vector<class Asteroid*> mAsteroids;
-    std::vector<class Asteroid*> mAsteroidsSmall;
 
     //Track the pauses between the asteroids waves
     GameState mGameState;
     Uint32 mPauseTime;
+
+    bool mWaitingForAction = true;
+    int mFramesToProcess = 0;
+    Action mSelectedAction = Action::Nothing;
 };

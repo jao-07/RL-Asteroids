@@ -101,63 +101,103 @@ void Game::RunLoop()
     }
 }
 
-void Game::ProcessInput()
-{
-
+void Game::ProcessInput() {
     SDL_Event event;
-    while (SDL_PollEvent(&event))
-    {
-        switch (event.type)
-        {
-            case SDL_QUIT:
-                Quit();
-                break;
-        }
-    }
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) Quit();
 
-    const Uint8* state = SDL_GetKeyboardState(nullptr);
-    mUpdatingActors = true;
-    for (auto actor : mActors)
-    {
-        actor->ProcessInput(state);
-    }
-    mUpdatingActors = false;
-}
+        if (mWaitingForAction && event.type == SDL_KEYDOWN) {
+            switch (event.key.keysym.sym) {
+                case SDLK_1: mSelectedAction = Action::Left; break;
+                case SDLK_2: mSelectedAction = Action::Right; break;
+                case SDLK_3: mSelectedAction = Action::Forward; break;
+                case SDLK_4: mSelectedAction = Action::Shot; break;
+                default: mSelectedAction = Action::Nothing; break;
+            }
 
-void Game::UpdateGame()
-{
-    while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16));
-
-    float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
-    if (deltaTime > 0.05f)
-    {
-        deltaTime = 0.05f;
-    }
-
-    mTicksCount = SDL_GetTicks();
-
-    // Update all actors and pending actors
-    UpdateActors(deltaTime);
-
-    if (mAsteroids.empty())
-        SDL_Log("mAsteroids empty");
-
-    if (mAsteroidsSmall.empty())
-        SDL_Log("mAsteroids Small empty");
-
-    if (mAsteroids.empty() && mAsteroidsSmall.empty() && mGameState == GameState::Playing) {
-        mGameState = GameState::Waiting;
-        mPauseTime = SDL_GetTicks();
-    }
-
-    if (mGameState == GameState::Waiting) {
-        if (SDL_GetTicks() - mPauseTime >= 1000) {
-            mShip->Reset();
-            CreateAsteroids();
-            mGameState = GameState::Playing;
+            mWaitingForAction = false;
+            mFramesToProcess = 4;
         }
     }
 }
+
+// void Game::ProcessInput()
+// {
+//
+//     SDL_Event event;
+//     while (SDL_PollEvent(&event))
+//     {
+//         switch (event.type)
+//         {
+//             case SDL_QUIT:
+//                 Quit();
+//                 break;
+//         }
+//     }
+//
+//     const Uint8* state = SDL_GetKeyboardState(nullptr);
+//     mUpdatingActors = true;
+//     for (auto actor : mActors)
+//     {
+//         actor->ProcessInput(state);
+//     }
+//     mUpdatingActors = false;
+// }
+
+void Game::UpdateGame() {
+    if (!mWaitingForAction && mFramesToProcess > 0) {
+
+        for (auto actor : mActors){
+             actor->ProcessInput(mSelectedAction);
+         }
+
+        // Roda a física de todos os atores (nave, asteroides)
+        // Use um dt fixo para garantir que o pulo de 4 frames seja constante
+        float fixedDT = 1.0f / 60.0f;
+        for (auto actor : mActors) {
+            actor->Update(fixedDT);
+        }
+
+        mFramesToProcess--;
+
+        if (mFramesToProcess <= 0) {
+            mWaitingForAction = true;
+            mSelectedAction = -1;
+
+            // Aqui você pode imprimir o vetor de estado no console para conferir
+            // std::cout << GetObservationAsString() << std::endl;
+        }
+    }
+}
+
+// void Game::UpdateGame()
+// {
+//     while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16));
+//
+//     float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
+//     if (deltaTime > 0.05f)
+//     {
+//         deltaTime = 0.05f;
+//     }
+//
+//     mTicksCount = SDL_GetTicks();
+//
+//     // Update all actors and pending actors
+//     UpdateActors(deltaTime);
+//
+//     if (mBigAsteroids.empty() && mSmallAsteroids.empty() && mGameState == GameState::Playing) {
+//         mGameState = GameState::Waiting;
+//         mPauseTime = SDL_GetTicks();
+//     }
+//
+//     if (mGameState == GameState::Waiting) {
+//         if (SDL_GetTicks() - mPauseTime >= 1000) {
+//             mShip->Reset();
+//             CreateAsteroids();
+//             mGameState = GameState::Playing;
+//         }
+//     }
+// }
 
 void Game::UpdateActors(float deltaTime)
 {
@@ -185,9 +225,11 @@ void Game::UpdateActors(float deltaTime)
 
     for (auto actor : deadActors)
     {
-        SDL_Log("Deleting actor: %p (%s)", actor, typeid(*actor).name());
+        //SDL_Log("Deleting actor: %p (%s)", actor, typeid(*actor).name());
         delete actor;
     }
+
+    orderAsteroids();
 }
 
 void Game::CreateParticles(Asteroid *ast, float min, float max) {
@@ -202,35 +244,29 @@ void Game::CreateParticles(Asteroid *ast, float min, float max) {
 
 void Game::AddAsteroid(Asteroid* ast)
 {
-    // --------------
-    // TODO - PARTE 3
-    // --------------
-
-    // TODO 3.1 (1 linhas): Adicione (emplace_back) o asteroide (ast) ao vetor de asteroids (mAsteroids).
     if (ast->GetSize() == AsteroidSize::Large)
-        mAsteroids.emplace_back(ast);
+        mBigAsteroids.emplace_back(ast);
     else
-        mAsteroidsSmall.emplace_back(ast);
-    SDL_Log("Asteroid Added - mAsteroids size: %d", mAsteroids.size());
+        mSmallAsteroids.emplace_back(ast);
+
+    mAsteroids.emplace_back(ast);
 }
 
 void Game::RemoveAsteroid(Asteroid* ast)
 {
     if (ast->GetSize() == AsteroidSize::Large) {
-        auto iter = std::find(mAsteroids.begin(), mAsteroids.end(), ast);
-        if (iter != mAsteroids.end()) {
+        auto iter = std::find(mBigAsteroids.begin(), mBigAsteroids.end(), ast);
+        if (iter != mBigAsteroids.end()) {
             if (ast->GetSize() == AsteroidSize::Large) {
                 Vector2 pos = ast->GetPosition();
                 for (int i=0; i<3; i++) {
                     Vector2 offset = Random::GetVector(Vector2(-10.0f, -10.0f), Vector2(10.0f, 10.0f));
-                    Asteroid *newSmallAst = new Asteroid(this, AsteroidSize::Small, pos+offset);
+                    auto *newSmallAst = new Asteroid(this, AsteroidSize::Small, pos+offset);
                 }
             }
             ast->SetState(ActorState::Destroy);
-            std::iter_swap(iter, mAsteroids.end() - 1);
-            mAsteroids.pop_back();
-
-            SDL_Log("Asteroid Removed - mAsteroids size: %d", mAsteroids.size());
+            std::iter_swap(iter, mBigAsteroids.end() - 1);
+            mBigAsteroids.pop_back();
 
             CreateParticles(ast, 600, 1000);
 
@@ -239,8 +275,8 @@ void Game::RemoveAsteroid(Asteroid* ast)
             SDL_Log("Attempting to remove asteroid not in list");
     }
     else {
-        auto iter = std::find(mAsteroidsSmall.begin(), mAsteroidsSmall.end(), ast);
-        if (iter != mAsteroidsSmall.end()) {
+        auto iter = std::find(mSmallAsteroids.begin(), mSmallAsteroids.end(), ast);
+        if (iter != mSmallAsteroids.end()) {
             if (ast->GetSize() == AsteroidSize::Large) {
                 Vector2 pos = ast->GetPosition();
                 for (int i=0; i<1; i++) {
@@ -249,10 +285,8 @@ void Game::RemoveAsteroid(Asteroid* ast)
                 }
             }
             ast->SetState(ActorState::Destroy);
-            std::iter_swap(iter, mAsteroidsSmall.end() - 1);
-            mAsteroidsSmall.pop_back();
-
-            SDL_Log("Asteroid Removed - mAsteroidsSmall size: %d", mAsteroidsSmall.size());
+            std::iter_swap(iter, mSmallAsteroids.end() - 1);
+            mSmallAsteroids.pop_back();
 
             CreateParticles(ast, 300, 500);
         }
@@ -261,6 +295,30 @@ void Game::RemoveAsteroid(Asteroid* ast)
     }
 
 
+}
+
+float Game::GetWrappedDelta(const float p1, const float p2, const float limit) {
+    float dx = p2 - p1;
+    if (dx > limit / 2.0f) {
+        dx -= limit;
+    } else if (dx < -limit / 2.0f) {
+        dx += limit;
+    }
+    return dx;
+}
+
+float Game::GetWrappedDistanceSq(const Actor* a, const Actor* b) const {
+    const float dx = GetWrappedDelta(a->GetPosition().x, b->GetPosition().x, static_cast<float>(mWindowWidth));
+    const float dy = GetWrappedDelta(a->GetPosition().y, b->GetPosition().y, static_cast<float>(mWindowHeight));
+    return dx*dx + dy*dy;
+}
+
+void Game::orderAsteroids () {
+    std::sort(mAsteroids.begin(), mAsteroids.end(), [this](const Asteroid* a, const Asteroid* b) {
+        const float distA = GetWrappedDistanceSq(mShip, a);
+        const float distB = GetWrappedDistanceSq(mShip, b);
+        return distA < distB;
+    });
 }
 
 void Game::AddActor(Actor* actor)
@@ -319,7 +377,7 @@ void Game::GenerateOutput()
 
     for (auto drawable : mDrawables)
     {
-        drawable->Draw(mRenderer);
+        drawable->Draw(mRenderer, mAsteroids);
     }
 
     // Swap front buffer and back buffer

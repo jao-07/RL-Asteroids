@@ -102,7 +102,7 @@ std::vector<Vector2> Asteroid::GenerateVertices(const int numVertices, const flo
 
     //  (a) Gere um número real entre 0.5 e 1.0 e multiplique pelo raio da circunferência (radius). Armazene o
     //  resultado em uma variável randLength;
-        float randLength = Random::GetFloatRange(0.5, 1) * radius;
+        float randLength = Random::GetFloatRange(0.7, 1) * radius;
     //  (b) Calcule a coordenada x do novo vértice multiplicando randLength pelo cosseno do ângulo corrente (angle);
     //  (b) Calcule a coordenada y da mesma forma, porém multiplicando pelo seno do ângulo corrente;
     //  (c) Adicione o vetor (x,y) ao conjunto de vértices (vertices);

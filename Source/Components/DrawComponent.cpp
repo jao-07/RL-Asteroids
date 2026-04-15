@@ -68,7 +68,7 @@ void DrawComponent::DrawCircle(SDL_Renderer *renderer, const Vector2& center, co
     DrawComponent::DrawPolygon(renderer, vertices);
 }
 
-void DrawComponent::Draw(SDL_Renderer *renderer)
+void DrawComponent::Draw(SDL_Renderer *renderer, std::vector<class Asteroid *> mAsteroids)
 {
     // --------------
     // TODO - PARTE 1
@@ -87,6 +87,9 @@ void DrawComponent::Draw(SDL_Renderer *renderer)
 
     // TODO 3.3 (~1 linha): Utilize a função SDL_SetRenderDrawColor para alterar a cor de desenho para branco.
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    if (this->GetOwner() == mAsteroids[0] || this->GetOwner() == mAsteroids[1] || this->GetOwner() == mAsteroids[2]) {
+        SDL_SetRenderDrawColor(renderer, 100, 100, 200, 255);
+    }
 
     // TODO 3.4 (~1 linha): Chame a função DrawPolygon para desenhar o conjunto de vértices transformado.
     DrawPolygon(renderer, verticesTemp);
@@ -97,3 +100,4 @@ void DrawComponent::Draw(SDL_Renderer *renderer)
     //SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
     //DrawCircle(renderer, Vector2::Zero, mOwner->GetComponent<CircleColliderComponent>()->GetRadius());
 }
+
