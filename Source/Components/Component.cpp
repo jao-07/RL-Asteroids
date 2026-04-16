@@ -25,7 +25,7 @@ void Component::Update(float deltaTime)
 {
 }
 
-void Component::ProcessInput(const Uint8* keyState)
+void Component::ProcessInput(Action action)
 {
 }
 

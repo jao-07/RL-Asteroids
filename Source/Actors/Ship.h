@@ -13,7 +13,7 @@ public:
                               float rotationForce = 5.0f,
                               float frictionCoefficient = 0.005f);
 
-    void OnProcessInput(const Uint8* keyState) override;
+    void OnProcessInput(Action action) override;
     void OnUpdate(float deltaTime) override;
     void Reset();
 

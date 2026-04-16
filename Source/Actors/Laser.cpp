@@ -41,31 +41,22 @@ Laser::Laser(Game* game, const float length, const float deathTimer)
 
 void Laser::OnUpdate(float deltaTime)
 {
-    // --------------
-    // TODO - PARTE 3
-    // --------------
-
-    // TODO 2.1 (~9 linhas): O raio laser deve ser destruído depois de um tempo desde sua emissão ou quando houver
-    //  colisão com um asteroide. Para contar quanto tempo percorreu desde a emissão do raio laser, subtraia o
-    //  deltaTime do cronômetro criado para essa contagem (mDeathTimer). Verifique se esse cronômetro é menor ou
-    //  igual a zero. Se for, destrua o laser alterando seu estado (SetState) para ActorState::Destroy. Caso
-    //  contrário, percorra a lista de asteroids (GetGame()->GetAsteroids()), verificando se o laser colide com
-    //  algum deles. Se houver colisão, destrua o laser e o asteroide alterando seus estados para ActorState::Destroy.
     mDeathTimer -= deltaTime;
     if(mDeathTimer <= 0)
         SetState(ActorState::Destroy);
 
-    std::vector<Asteroid*> asteroids = mGame->GetAsteroids();
-    for (int i=0; i<asteroids.size(); i++) {
-        auto *ast = asteroids[i]->GetComponent<CircleColliderComponent>();
+    std::vector<Asteroid*> BigAsteroids = mGame->GetBigAsteroids();
+    for (int i=0; i<BigAsteroids.size(); i++) {
+        auto *ast = BigAsteroids[i]->GetComponent<CircleColliderComponent>();
         if (this->mCircleColliderComponent->Intersect(*ast)) {
+            SDL_Log("Asteroid (%f, %f) hit", BigAsteroids[i]->GetPosition().x, BigAsteroids[i]->GetPosition().y);
             SetState(ActorState::Destroy);
-            asteroids[i]->SetState(ActorState::Destroy);
+            BigAsteroids[i]->SetState(ActorState::Destroy);
             break;
         }
     }
 
-    std::vector<Asteroid*> asteroidsSmall = mGame->GetAsteroidsSmall();
+    std::vector<Asteroid*> asteroidsSmall = mGame->GetSmallAsteroids();
     for (int i=0; i<asteroidsSmall.size(); i++) {
         auto *ast = asteroidsSmall[i]->GetComponent<CircleColliderComponent>();
         if (this->mCircleColliderComponent->Intersect(*ast)) {

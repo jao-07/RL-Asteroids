@@ -10,13 +10,7 @@
 #include <vector>
 #include <SDL_stdinc.h>
 #include "../Math.h"
-
-enum class ActorState
-{
-    Active,
-    Paused,
-    Destroy
-};
+#include "../Constants.h"
 
 class Actor
 {
@@ -27,8 +21,8 @@ public:
     // Update function called from Game (not overridable)
     void Update(float deltaTime);
     // ProcessInput function called from Game (not overridable)
-    void ProcessInput(const Uint8* keyState);
-
+    //void ProcessInput(const Uint8* keyState);
+    void ProcessInput(Action action);
     // Position getter/setter
     const Vector2& GetPosition() const { return mPosition; }
     void SetPosition(const Vector2& pos) { mPosition = pos; }
@@ -72,7 +66,7 @@ protected:
     // Any actor-specific update code (overridable)
     virtual void OnUpdate(float deltaTime);
     // Any actor-specific update code (overridable)
-    virtual void OnProcessInput(const Uint8* keyState);
+    virtual void OnProcessInput(Action action);
 
     // Actor's state
     ActorState mState;

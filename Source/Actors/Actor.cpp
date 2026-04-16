@@ -50,20 +50,30 @@ void Actor::OnUpdate(float deltaTime)
 
 }
 
-void Actor::ProcessInput(const Uint8* keyState)
-{
-    if (mState == ActorState::Active)
-    {
-        for (auto comp : mComponents)
-        {
-            comp->ProcessInput(keyState);
+// void Actor::ProcessInput(const Uint8* keyState)
+// {
+//     if (mState == ActorState::Active)
+//     {
+//         for (auto comp : mComponents)
+//         {
+//             comp->ProcessInput(keyState);
+//         }
+//
+//         OnProcessInput(keyState);
+//     }
+// }
+
+void Actor::ProcessInput(Action action) {
+    if (mState == ActorState::Active) {
+        for (auto component : mComponents) {
+            component->ProcessInput(action);
         }
 
-        OnProcessInput(keyState);
+        OnProcessInput(action);
     }
 }
 
-void Actor::OnProcessInput(const Uint8* keyState)
+void Actor::OnProcessInput(Action action)
 {
 
 }

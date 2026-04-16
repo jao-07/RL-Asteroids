@@ -58,7 +58,7 @@ void Ship::Reset() {
     SetPosition(Vector2(mGame->GetWindowWidth() / 2.0f, mGame->GetWindowHeight() / 2.0f));
 }
 
-void Ship::OnProcessInput(const uint8_t* state)
+void Ship::OnProcessInput(Action action)
 {
     // --------------
     // TODO - PARTE 3
@@ -68,7 +68,7 @@ void Ship::OnProcessInput(const uint8_t* state)
     //  aplique uma força para frente com magnitude dada pelo atributo mForwardSpeed. Utilize o método
     //  GetForward() para obter o vetor da frente e a função ApplyForce do componente mRigidBodyComponent
     //  para aplicar a força.
-    if (state[SDL_SCANCODE_W]){
+    if (action == Action::Forward){
         Vector2 forward = GetForward();
         mRigidBodyComponent->ApplyForce(forward * mForwardSpeed);
     }
@@ -77,21 +77,21 @@ void Ship::OnProcessInput(const uint8_t* state)
     //  está pressionando a tecla A. Se estiver, some à velocidade angular (angularSpeed) a velocidade de
     //  rotação mRotationForce.
     float angularSpeed = 0;
-    if (state[SDL_SCANCODE_A]) {
+    if (action == Action::Left) {
         angularSpeed -= mRotationForce;
     }
 
     // TODO 2.3 (~4 linhas): Verifique se o jogador está pressionando a tecla D. Se estiver,
     //  subtraia da velocidade angular (angularSpeed) a velocidade de rotação (mRotationForce).
-    if (state[SDL_SCANCODE_D]) {
+    if (action == Action::Right) {
         angularSpeed += mRotationForce;
     }
 
     // TODO 2.4 (1 linha): Verifique se o jogador está pressionando a barra de Espaço e se o tempo de
     //  resfriamento do laser já passou (mLaserCooldown <= 0.0f). Se ambas as condições forem verdadeiras:
-    if ((state[SDL_SCANCODE_SPACE]) && (mLaserCooldown <= 0.0f)) {
+    if ((action == Action::Shoot) && (mLaserCooldown <= 0.0f)) {
         // TODO 2.4.1 (1 linha): Instancie uma nova partícula de laser com tamanho 5.0;
-        Laser* l = new Laser(this->mGame, 5);
+        auto* l = new Laser(this->mGame, 5);
         // TODO 2.4.2 (1 linha): Posicione esse partícula na ponta da frente da nave (posição da nave + vetor forward *
         //  altura do triângulo da nave);
         l->SetPosition(this->mPosition + GetForward() * mHeight);
@@ -138,11 +138,11 @@ void Ship::OnUpdate(float deltaTime)
     }
 
     // TODO 3.4 (~6 linhas): Percorra a lista de asteroides do jogo e verifique, para cada asteroide,
-    //  se ele está colidindo com a nave. Lembre-se que o método GetGame()->GetAsteroids() retorna a lista
+    //  se ele está colidindo com a nave. Lembre-se que o método GetGame()->GetBigAsteroids() retorna a lista
     //  de asteroides. Além disso, você já implementou o método Intersect do CircleColliderComponent. Tanto a
     //  nave quanto os asteroides possuem esse componente, então basta utilizar essa função para verificar
     //  a colisão. Se houver colisão da nave com algum asteroide, termine o jogo (GetGame()->Quit()).
-    std::vector<Asteroid*> asteroids = mGame->GetAsteroids();
+    std::vector<Asteroid*> asteroids = mGame->GetBigAsteroids();
     for (int i=0; i<asteroids.size(); i++) {
         auto *ast = asteroids[i]->GetComponent<CircleColliderComponent>();
         if (this->mCircleColliderComponent->Intersect(*ast)) {
@@ -150,7 +150,7 @@ void Ship::OnUpdate(float deltaTime)
         }
     }
 
-    std::vector<Asteroid*> asteroidsSmall = mGame->GetAsteroidsSmall();
+    std::vector<Asteroid*> asteroidsSmall = mGame->GetSmallAsteroids();
     for (int i=0; i<asteroidsSmall.size(); i++) {
         auto *ast = asteroidsSmall[i]->GetComponent<CircleColliderComponent>();
         if (this->mCircleColliderComponent->Intersect(*ast)) {

@@ -15,20 +15,6 @@
 #include <algorithm>
 #include <cmath>
 
-enum class GameState
-{
-    Playing,
-    Waiting
-};
-
-enum class Action {
-    Right,
-    Left,
-    Shot,
-    Forward,
-    Nothing
-};
-
 class Game
 {
 public:
@@ -59,8 +45,8 @@ public:
     // Game-specific (add/remove asteroid)
     void AddAsteroid(class Asteroid* ast);
     void RemoveAsteroid(class Asteroid* ast);
-    std::vector<class Asteroid*>& GetAsteroids() { return mBigAsteroids; }
-    std::vector<class Asteroid*>& GetAsteroidsSmall() { return mSmallAsteroids; }
+    std::vector<class Asteroid*>& GetBigAsteroids() { return mBigAsteroids; }
+    std::vector<class Asteroid*>& GetSmallAsteroids() { return mSmallAsteroids; }
     static float GetWrappedDelta(float p1, float p2, float limit);
     float GetWrappedDistanceSq(const Actor* a, const Actor* b) const;
     void orderAsteroids();
@@ -105,5 +91,5 @@ private:
 
     bool mWaitingForAction = true;
     int mFramesToProcess = 0;
-    Action mSelectedAction = Action::Nothing;
+    Action mSelectedAction = Action::NoAction;
 };

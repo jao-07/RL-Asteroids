@@ -14,6 +14,7 @@ add_executable(${PROJECT_NAME}
         Source/Actors/Actor.cpp
         Source/Components/Component.cpp
         Source/Game.cpp
+        Source/Game.h
         Source/Components/DrawComponent.cpp
         Source/Components/DrawComponent.h
         Source/Components/RigidBodyComponent.cpp
@@ -27,6 +28,7 @@ add_executable(${PROJECT_NAME}
         Source/Actors/Laser.cpp
         Source/Actors/Laser.h
         Source/Actors/Particle.cpp
-        Source/Actors/Particle.h)
+        Source/Actors/Particle.h
+        Source/Constants.h)
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})

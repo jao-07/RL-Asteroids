@@ -111,7 +111,7 @@ void Game::ProcessInput() {
                 case SDLK_1: mSelectedAction = Action::Left; break;
                 case SDLK_2: mSelectedAction = Action::Right; break;
                 case SDLK_3: mSelectedAction = Action::Forward; break;
-                case SDLK_4: mSelectedAction = Action::Shot; break;
+                case SDLK_4: mSelectedAction = Action::Shoot; break;
                 default: mSelectedAction = Action::Nothing; break;
             }
 
@@ -151,18 +151,14 @@ void Game::UpdateGame() {
              actor->ProcessInput(mSelectedAction);
          }
 
-        // Roda a física de todos os atores (nave, asteroides)
-        // Use um dt fixo para garantir que o pulo de 4 frames seja constante
-        float fixedDT = 1.0f / 60.0f;
-        for (auto actor : mActors) {
-            actor->Update(fixedDT);
-        }
+        constexpr float fixedDT = 1.0f / 60.0f;
+        UpdateActors(fixedDT);
 
         mFramesToProcess--;
 
         if (mFramesToProcess <= 0) {
             mWaitingForAction = true;
-            mSelectedAction = -1;
+            mSelectedAction = Action::NoAction;
 
             // Aqui você pode imprimir o vetor de estado no console para conferir
             // std::cout << GetObservationAsString() << std::endl;
