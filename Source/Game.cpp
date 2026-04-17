@@ -85,19 +85,21 @@ void Game::InitializeActors()
     //  mWindowHeight armazenam as dimensões da tela.
     mShip = new Ship(this, 20);
     mShip->SetPosition(Vector2(mWindowWidth / 2.0f, mWindowHeight / 2.0f));
-
-    // TODO 2.2 (~4 linhas): Escreva um laço para instanciar 10 objetos da classe Asteroid, cada um com 80 pixels de raio.
+    
     CreateAsteroids();
 
 }
 
 void Game::RunLoop()
 {
+    GenerateOutput();
     while (mIsRunning)
     {
         ProcessInput();
-        UpdateGame();
-        GenerateOutput();
+        if (!mWaitingForAction) {
+            UpdateGame();
+            GenerateOutput();
+        }
     }
 }
 
@@ -145,6 +147,7 @@ void Game::ProcessInput() {
 // }
 
 void Game::UpdateGame() {
+    SDL_Log("update");
     if (!mWaitingForAction && mFramesToProcess > 0) {
 
         for (auto actor : mActors){
@@ -378,6 +381,12 @@ void Game::GenerateOutput()
 
     // Swap front buffer and back buffer
     SDL_RenderPresent(mRenderer);
+
+    SDL_Log("Nave: (%f, %f)", mShip->GetPosition().x, mShip->GetPosition().y);
+    SDL_Log("Asteroids mais próximos:");
+    SDL_Log("1: (%f, %f)", mAsteroids[0]->GetPosition().x, mAsteroids[0]->GetPosition().y);
+    SDL_Log("2: (%f, %f)", mAsteroids[1]->GetPosition().x, mAsteroids[1]->GetPosition().y);
+    SDL_Log("3: (%f, %f)", mAsteroids[2]->GetPosition().x, mAsteroids[2]->GetPosition().y);
 }
 
 void Game::Shutdown()
