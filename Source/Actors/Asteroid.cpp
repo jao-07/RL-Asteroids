@@ -18,57 +18,33 @@ Asteroid::Asteroid(Game* game, AsteroidSize size, Vector2 position, const int nu
         ,mCircleColliderComponent(nullptr)
         ,mSize(size)
 {
-    // --------------
-    // TODO - PARTE 3
-    // --------------
-
     Vector2 randStartingForce = Vector2::Zero;
     float averageLength = 0.0f;
     std::vector<Vector2> vertices;
 
     if (size == AsteroidSize::Large) {
-        // Create a circle with numVertices
         vertices = GenerateVertices(numVertices, 80);
-
-        // Calculate average vertices length to be the collider radius
         averageLength = CalculateAverageVerticesLength(vertices);
-
-        //Set the position of the asteroid so that there is no collision with the ship in the instance
-         Vector2 pos = Random::GetVector(Vector2::Zero, Vector2(mGame->GetWindowWidth(), mGame->GetWindowHeight()));
-         while (!(pos.y > (mGame->GetWindowHeight() - 200) || pos.y < 200))
-             pos = Random::GetVector(Vector2::Zero, Vector2(mGame->GetWindowWidth(), mGame->GetWindowHeight()));
+        Vector2 pos = Random::GetVector(Vector2::Zero, Vector2(mGame->GetWindowWidth(), mGame->GetWindowHeight()));
+        while (!(pos.y > (mGame->GetWindowHeight() - 200) || pos.y < 200))
+            pos = Random::GetVector(Vector2::Zero, Vector2(mGame->GetWindowWidth(), mGame->GetWindowHeight()));
         SetPosition(pos);
 
-        // Generate random starting force
         randStartingForce = GenerateRandomStartingForce(1000.0f, 1500.0f);
     }
     else {
-        // Create a circle with numVertices
         vertices = GenerateVertices(numVertices, 40);
-
-        // Calculate average vertices length to be the collider radius
         averageLength = CalculateAverageVerticesLength(vertices);
-
         SetPosition(position);
-
-        // Generate random starting force
         randStartingForce = GenerateRandomStartingForce(2000.0f, 2500.0f);
     }
 
-    // TODO 1.3 (3 linhas): Instancie os componentes DrawComponent, RigidBodyComponent e CircleColliderComponent.
-    //  Armazene esses componentes nos ponteiros mDrawComponent, mRigidBodyComponent e mCircleColliderComponent,
-    //  respectivamente. O container de vértices criado na etapa anterior será passado como parâmetro para o
-    //  DrawComponente. E, para o CircleColliderComponent, passe a média dos comprimentos dos vértices gerados
-    //  (averageLength) como raio de colisão.
     mDrawComponent = new DrawComponent(this, vertices);
     mRigidBodyComponent = new RigidBodyComponent(this);
     mCircleColliderComponent = new CircleColliderComponent(this, averageLength);
 
-    // TODO 1.4 (1 linha): Aplique a força aleatória gerada anteriormente (randStartingForce) para mover o
-    //  asteroide. Utilize a função ApplyForce do componente mRigidBodyComponent
     mRigidBodyComponent->ApplyForce(randStartingForce);
 
-    // TODO 1.5 (1 linha): Adicione (game->AddAsteroid()) esse asteroide (this) à lista de asteroides do jogo.
     mGame->AddAsteroid(this);
 }
 

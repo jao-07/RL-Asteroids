@@ -14,6 +14,7 @@
 #include <typeinfo>
 #include <algorithm>
 #include <cmath>
+#include <tuple>
 
 class Game
 {
@@ -45,17 +46,20 @@ public:
     // Game-specific (add/remove asteroid)
     void AddAsteroid(class Asteroid* ast);
     void RemoveAsteroid(class Asteroid* ast);
-    std::vector<class Asteroid*>& GetBigAsteroids() { return mBigAsteroids; }
-    std::vector<class Asteroid*>& GetSmallAsteroids() { return mSmallAsteroids; }
+    std::vector<class Asteroid*>& GetAsteroids() { return mAsteroids; }
     static float GetWrappedDelta(float p1, float p2, float limit);
     float GetWrappedDistanceSq(const Actor* a, const Actor* b) const;
     void orderAsteroids();
+    void Reset();
 
 
 private:
     void ProcessInput();
     void UpdateGame();
     void GenerateOutput();
+
+    void DeleteAsteroids();
+    void DeleteActors();
 
     // All the actors in the game
     std::vector<class Actor*> mActors;
@@ -81,8 +85,6 @@ private:
 
     // Game-specific
     class Ship* mShip;
-    std::vector<class Asteroid*> mBigAsteroids;
-    std::vector<class Asteroid*> mSmallAsteroids;
     std::vector<class Asteroid*> mAsteroids;
 
     //Track the pauses between the asteroids waves
@@ -92,4 +94,7 @@ private:
     bool mWaitingForAction = true;
     int mFramesToProcess = 0;
     Action mSelectedAction = Action::NoAction;
+
+    std::vector<float> GetState();
+    std::tuple<std::vector<float>, float, bool, bool> Step(int action);
 };
