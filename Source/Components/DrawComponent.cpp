@@ -68,30 +68,16 @@ void DrawComponent::DrawCircle(SDL_Renderer *renderer, const Vector2& center, co
     DrawComponent::DrawPolygon(renderer, vertices);
 }
 
-void DrawComponent::Draw(SDL_Renderer *renderer, std::vector<class Asteroid *> mAsteroids)
+void DrawComponent::Draw(SDL_Renderer *renderer)
 {
-    // --------------
-    // TODO - PARTE 1
-    // --------------
-
-    // TODO 3.1 (~1 linha): Utilize a função Matrix3::CreateRotation para criar uma matriz de rotação com o ângulo
-    //  do dono desse componente (-mOwner->GetRotation()).
     const Matrix3 RotationMatrix = Matrix3::CreateRotation(mOwner->GetRotation());
 
-    // TODO 3.2 (~4 linhas): Percorra os vértices desse componente (mVertices), multiplicando-os pela matriz de
-    //  rotação com a função Vector2::Transform. Adicione o vetor transformado à um vetor temporária de vertices.
     std::vector<Vector2> verticesTemp;
     for (auto vertice: mVertices) {
         verticesTemp.push_back(Vector2::Transform(vertice, RotationMatrix));
     }
 
-    // TODO 3.3 (~1 linha): Utilize a função SDL_SetRenderDrawColor para alterar a cor de desenho para branco.
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    if (this->GetOwner() == mAsteroids[0] || this->GetOwner() == mAsteroids[1] || this->GetOwner() == mAsteroids[2]) {
-        SDL_SetRenderDrawColor(renderer, 100, 100, 200, 255);
-    }
-
-    // TODO 3.4 (~1 linha): Chame a função DrawPolygon para desenhar o conjunto de vértices transformado.
     DrawPolygon(renderer, verticesTemp);
 
     // TODO 3.5 (~4 linhas): Utilize a função DrawCircle para desenhar o círculo de colisão desse objeto.

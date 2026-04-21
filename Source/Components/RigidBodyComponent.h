@@ -34,4 +34,7 @@ private:
 
     Vector2 mVelocity;
     Vector2 mAcceleration;
+
+    float mMaxVelocity = 300.0f;
+    float mMinVelocity = -300.0f;
 };

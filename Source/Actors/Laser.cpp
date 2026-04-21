@@ -14,26 +14,13 @@ Laser::Laser(Game* game, const float length, const float deathTimer)
         ,mLength(length)
         ,mDeathTimer(deathTimer)
 {
-    // --------------
-    // TODO - PARTE 3
-    // --------------
-
-    // TODO 1.1 (~2 linhas): Crie 2 vértices (Vector2) considerando o centro da nave como origem e o
-    //  atributo mLength como o comprimento do raio laser. Por exemplo: v1 = (-l/2, 0) e v2 = (l/2, 0)
     Vector2 v1 = Vector2(-mLength/2, 0);
     Vector2 v2 = Vector2(mLength/2, 0);
 
-
-    // TODO 1.2 (~3 linhas): Adicione esses 3 vértices end um container std::vector.
     std::vector<Vector2> verts;
     verts.push_back(v1);
     verts.push_back(v2);
 
-    // TODO 1.3 (3 linhas): Instancie os componentes DrawComponent, RigidBodyComponent e CircleColliderComponent.
-    //  Armazene esses componentes nos ponteiros mDrawComponent, mRigidBodyComponent e mCircleColliderComponent,
-    //  respectivamente. O container de vértices criado na etapa anterior será passado como parâmetro para o
-    //  DrawComponente. Para o RigidBodyComponent, passe uma massa pequena (e.g., 0.1) como parâmetro.
-    //  Para o CircleColliderComponent, passe o comprimento do raio lases (mLenght) como raio de colisão.
     mDrawComponent = new DrawComponent(this, verts);
     mRigidBodyComponent = new RigidBodyComponent(this, 0.1);
     mCircleColliderComponent = new CircleColliderComponent(this, mLength);

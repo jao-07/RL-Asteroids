@@ -90,6 +90,12 @@ void Game::RunLoop()
     }
 }
 
+void Game::ApplyAction(Action action) {
+    mSelectedAction = action;
+    mWaitingForAction = false;
+    mFramesToProcess = 4;
+}
+
 void Game::ProcessInput() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
@@ -213,7 +219,8 @@ void Game::UpdateActors(float deltaTime)
         delete actor;
     }
 
-    orderAsteroids();
+    if (!mAsteroids.empty())
+        orderAsteroids();
 }
 
 void Game::CreateParticles(Asteroid *ast, float min, float max) {
@@ -383,18 +390,16 @@ void Game::GenerateOutput()
 
     for (auto drawable : mDrawables)
     {
-        drawable->Draw(mRenderer, mAsteroids);
+        drawable->Draw(mRenderer);
     }
 
     // Swap front buffer and back buffer
     SDL_RenderPresent(mRenderer);
 
-    SDL_Log("Nave: (%f, %f)", mShip->GetPosition().x, mShip->GetPosition().y);
-    SDL_Log("Asteroids mais próximos:");
-    SDL_Log("1: (%f, %f)", mAsteroids[0]->GetPosition().x, mAsteroids[0]->GetPosition().y);
-    SDL_Log("2: (%f, %f)", mAsteroids[1]->GetPosition().x, mAsteroids[1]->GetPosition().y);
-    SDL_Log("3: (%f, %f)", mAsteroids[2]->GetPosition().x, mAsteroids[2]->GetPosition().y);
-    SDL_Log("Numero de asteroids: %d", mAsteroids.size());
+    const std::vector<float> state = GetState();
+    SDL_Log("state: %d", state.size());
+    for (auto s : state)
+        SDL_Log("%f", s);
 }
 
 void Game::Shutdown()
@@ -434,22 +439,47 @@ void Game::Reset() {
 
 /* 0: Pos x da nave
  * 1: Pos y da nave
- * 2: cos(angulo) da nave (Actor::GetForward)
- * 3: sen(angulo) da nave (Actor::GetForward)
- * 4: vel x da nave
- * 5: vel y da nave
- * 6: cooldown do tiro da nave
- * de 7 a 26 para os 5 asteroids mais proximos
- * 7: pos relativa x do asteroid
- * 8: pos relativa y do asteroid
- * 9: vel x do asteroid
- * 10: vel y do asteroid
+ * 2: Raio da nave
+ * 3: cos(angulo) da nave (Actor::GetForward)
+ * 4: sen(angulo) da nave (Actor::GetForward)
+ * 5: vel x da nave
+ * 6: vel y da nave
+ * 7: cooldown do tiro da nave
+ * de 8 a 32 para os 5 asteroids mais proximos
+ * 8: pos relativa x do asteroid
+ * 9: pos relativa y do asteroid
+ * 10: raio do asteroide
+ * 11: vel x do asteroid
+ * 12: vel y do asteroid
  */
-std::vector<float> Game::GetState() {
+std::vector<float> Game::GetState() const {
     std::vector<float> states;
-    states.reserve(37);
+    //Dados da nave
+    states.emplace_back(mShip->GetPosition().x / static_cast<float>(mWindowWidth));
+    states.emplace_back(mShip->GetPosition().y / static_cast<float>(mWindowHeight));
+    states.emplace_back(mShip->GetComponent<CircleColliderComponent>()->GetRadius() / MAX_RADIUS);
+    states.emplace_back(mShip->GetForward().x);
+    states.emplace_back(mShip->GetForward().y);
+    states.emplace_back(mShip->GetComponent<RigidBodyComponent>()->GetVelocity().x / MAX_SHIP_VELOCITY);
+    states.emplace_back(mShip->GetComponent<RigidBodyComponent>()->GetVelocity().y / MAX_SHIP_VELOCITY);
+    states.emplace_back(mShip->GetLaserCoolDown() / MAX_LASER_COOLDOWN);
+
+    //Dados dos 5 asteroids mais próximos
+    for (int i=0; i<5; i++) {
+        states.emplace_back(GetWrappedDelta(mShip->GetPosition().x, mAsteroids[i]->GetPosition().x, static_cast<float>(mWindowWidth)) / static_cast<float>(mWindowWidth));
+        states.emplace_back(GetWrappedDelta(mShip->GetPosition().y, mAsteroids[i]->GetPosition().y, static_cast<float>(mWindowHeight)) / static_cast<float>(mWindowHeight));
+        states.emplace_back(mAsteroids[i]->GetComponent<CircleColliderComponent>()->GetRadius() / MAX_RADIUS);
+        states.emplace_back(mAsteroids[i]->GetComponent<RigidBodyComponent>()->GetVelocity().x / MAX_ASTEROID_VELOCITY);
+        states.emplace_back(mAsteroids[i]->GetComponent<RigidBodyComponent>()->GetVelocity().y / MAX_ASTEROID_VELOCITY);
+    }
+    return states;
 }
 
-std::tuple<std::vector<float>, float, bool, bool> Game::Step(int action) {
+std::tuple<std::vector<float>, float, bool, bool> Game::Step(int actionInt) {
+    auto action = static_cast<Action>(actionInt);
+    ApplyAction(action);
 
+    while (!mWaitingForAction) {
+        UpdateGame();
+    }
 }

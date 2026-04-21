@@ -17,6 +17,8 @@ public:
     void OnUpdate(float deltaTime) override;
     void Reset();
 
+    float GetLaserCoolDown() {return mLaserCooldown;}
+
 private:
     float mForwardSpeed;
     float mRotationForce;

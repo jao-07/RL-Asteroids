@@ -75,7 +75,7 @@ void Ship::OnProcessInput(Action action)
 
 void Ship::OnUpdate(float deltaTime)
 {
-    mLaserCooldown -= deltaTime;
+    mLaserCooldown = mLaserCooldown - deltaTime <= 0.0f ? 0.0f : mLaserCooldown - deltaTime;
 
     Vector2 velocity = mRigidBodyComponent->GetVelocity();
 

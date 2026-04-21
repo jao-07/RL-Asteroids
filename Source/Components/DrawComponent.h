@@ -15,7 +15,7 @@ public:
     DrawComponent(class Actor* owner, std::vector<Vector2> &vertices, int drawOrder = 100);
     ~DrawComponent();
 
-    virtual void Draw(SDL_Renderer* renderer, std::vector<class Asteroid *> mAsteroids);
+    virtual void Draw(SDL_Renderer* renderer);
 
     int GetDrawOrder() const { return mDrawOrder; }
     std::vector<Vector2>& GetVertices() { return mVertices; }

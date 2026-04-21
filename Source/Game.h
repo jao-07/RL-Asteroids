@@ -95,6 +95,13 @@ private:
     int mFramesToProcess = 0;
     Action mSelectedAction = Action::NoAction;
 
-    std::vector<float> GetState();
+    void ApplyAction(Action action);
+
+    float MAX_SHIP_VELOCITY = 300.0f;
+    float MAX_ASTEROID_VELOCITY = 40.0f;
+    float MAX_RADIUS = 80.0f;
+    float MAX_LASER_COOLDOWN = 2.0f;
+
+    std::vector<float> GetState() const;
     std::tuple<std::vector<float>, float, bool, bool> Step(int action);
 };

@@ -30,13 +30,13 @@ Asteroid::Asteroid(Game* game, AsteroidSize size, Vector2 position, const int nu
             pos = Random::GetVector(Vector2::Zero, Vector2(mGame->GetWindowWidth(), mGame->GetWindowHeight()));
         SetPosition(pos);
 
-        randStartingForce = GenerateRandomStartingForce(1000.0f, 1500.0f);
+        randStartingForce = GenerateRandomStartingForce(1200.0f, 1500.0f);
     }
     else {
         vertices = GenerateVertices(numVertices, 40);
         averageLength = CalculateAverageVerticesLength(vertices);
         SetPosition(position);
-        randStartingForce = GenerateRandomStartingForce(2000.0f, 2500.0f);
+        randStartingForce = GenerateRandomStartingForce(2100.0f, 2400.0f);
     }
 
     mDrawComponent = new DrawComponent(this, vertices);
