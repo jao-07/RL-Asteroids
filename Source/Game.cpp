@@ -101,19 +101,19 @@ void Game::ProcessInput() {
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) Quit();
 
-        if (mWaitingForAction && event.type == SDL_KEYDOWN) {
-            switch (event.key.keysym.sym) {
-                case SDLK_1: mSelectedAction = Action::Left; break;
-                case SDLK_2: mSelectedAction = Action::Right; break;
-                case SDLK_3: mSelectedAction = Action::Forward; break;
-                case SDLK_4: mSelectedAction = Action::Shoot; break;
-                case SDLK_r: Reset();
-                default: mSelectedAction = Action::Nothing; break;
-            }
-
-            mWaitingForAction = false;
-            mFramesToProcess = 4;
-        }
+        // if (mWaitingForAction && event.type == SDL_KEYDOWN) {
+        //     switch (event.key.keysym.sym) {
+        //         case SDLK_1: mSelectedAction = Action::Left; break;
+        //         case SDLK_2: mSelectedAction = Action::Right; break;
+        //         case SDLK_3: mSelectedAction = Action::Forward; break;
+        //         case SDLK_4: mSelectedAction = Action::Shoot; break;
+        //         case SDLK_r: Reset();
+        //         default: mSelectedAction = Action::Nothing; break;
+        //     }
+        //
+        //     mWaitingForAction = false;
+        //     mFramesToProcess = 4;
+        // }
     }
 }
 
@@ -141,7 +141,8 @@ void Game::ProcessInput() {
 // }
 
 void Game::UpdateGame() {
-    if (!mWaitingForAction && mFramesToProcess > 0) {
+    //if (!mWaitingForAction && mFramesToProcess > 0) {
+    for (int i=mFramesToProcess; i>0; i--){
 
         for (auto actor : mActors){
              actor->ProcessInput(mSelectedAction);
@@ -150,13 +151,12 @@ void Game::UpdateGame() {
         constexpr float fixedDT = 1.0f / 60.0f;
         UpdateActors(fixedDT);
 
-        mFramesToProcess--;
+        // mFramesToProcess--;
 
-        if (mFramesToProcess <= 0) {
-            mWaitingForAction = true;
-            mSelectedAction = Action::NoAction;
-
-        }
+        // if (mFramesToProcess <= 0) {
+        //     mWaitingForAction = true;
+        //     mSelectedAction = Action::NoAction;
+        // }
     }
 }
 
@@ -396,7 +396,7 @@ void Game::GenerateOutput()
     // Swap front buffer and back buffer
     SDL_RenderPresent(mRenderer);
 
-    const std::vector<float> state = GetState();
+    const std::vector<float> state = GetObservationSpace();
     SDL_Log("state: %d", state.size());
     for (auto s : state)
         SDL_Log("%f", s);
@@ -435,6 +435,7 @@ void Game::Reset() {
     DeleteAsteroids();
     DeleteActors();
     InitializeActors();
+    mStepsDone = 0;
 }
 
 /* 0: Pos x da nave
@@ -452,7 +453,7 @@ void Game::Reset() {
  * 11: vel x do asteroid
  * 12: vel y do asteroid
  */
-std::vector<float> Game::GetState() const {
+std::vector<float> Game::GetObservationSpace() const {
     std::vector<float> states;
     //Dados da nave
     states.emplace_back(mShip->GetPosition().x / static_cast<float>(mWindowWidth));
@@ -475,11 +476,25 @@ std::vector<float> Game::GetState() const {
     return states;
 }
 
-std::tuple<std::vector<float>, float, bool, bool> Game::Step(int actionInt) {
-    auto action = static_cast<Action>(actionInt);
-    ApplyAction(action);
-
-    while (!mWaitingForAction) {
-        UpdateGame();
+float Game::CalculateReward() {
+    if (mShip->GetIsDead()) {
+        return -10.0f;
     }
+    if (mAsteroidDestroyed)
+}
+
+std::tuple<std::vector<float>, float, bool, bool> Game::Step(int action) {
+    ApplyAction(static_cast<Action>(action));
+
+    ProcessInput();
+    UpdateGame();
+    if (mVisualize)
+        GenerateOutput();
+
+    mStepsDone++;
+
+    bool terminated = mShip->GetIsDead() || mAsteroids.empty();
+    bool truncated = mStepsDone >= MAX_STEPS;
+
+    return std::make_tuple(GetObservationSpace(), CalculateReward(), terminated, truncated);
 }

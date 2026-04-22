@@ -45,6 +45,7 @@ void Ship::Reset() {
     mRigidBodyComponent->SetVelocity(Vector2(0, 0));
     mRigidBodyComponent->SetAngularSpeed(0);
     SetPosition(Vector2(mGame->GetWindowWidth() / 2.0f, mGame->GetWindowHeight() / 2.0f));
+    mIsDead = false;
 }
 
 void Ship::OnProcessInput(Action action)
@@ -92,7 +93,7 @@ void Ship::OnUpdate(float deltaTime)
     for (int i=0; i<asteroids.size(); i++) {
         auto *ast = asteroids[i]->GetComponent<CircleColliderComponent>();
         if (this->mCircleColliderComponent->Intersect(*ast)) {
-            mGame->Quit();
+            mIsDead = true;
         }
     }
 }

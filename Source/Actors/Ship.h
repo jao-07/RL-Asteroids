@@ -18,6 +18,7 @@ public:
     void Reset();
 
     float GetLaserCoolDown() {return mLaserCooldown;}
+    bool GetIsDead() {return mIsDead;}
 
 private:
     float mForwardSpeed;
@@ -25,6 +26,8 @@ private:
     float mFrictionCoefficient;
     float mLaserCooldown;
     float mHeight;
+
+    bool mIsDead = false;
 
     class DrawComponent* mDrawComponent;
     class RigidBodyComponent* mRigidBodyComponent;

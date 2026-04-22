@@ -94,6 +94,8 @@ private:
     bool mWaitingForAction = true;
     int mFramesToProcess = 0;
     Action mSelectedAction = Action::NoAction;
+    bool mVisualize = false;
+    int mStepsDone = 0;
 
     void ApplyAction(Action action);
 
@@ -101,7 +103,8 @@ private:
     float MAX_ASTEROID_VELOCITY = 40.0f;
     float MAX_RADIUS = 80.0f;
     float MAX_LASER_COOLDOWN = 2.0f;
+    int MAX_STEPS = 3000;
 
-    std::vector<float> GetState() const;
+    std::vector<float> GetObservationSpace() const;
     std::tuple<std::vector<float>, float, bool, bool> Step(int action);
 };
