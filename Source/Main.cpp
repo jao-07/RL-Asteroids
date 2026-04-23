@@ -23,7 +23,7 @@
 
 int main(int argc, char** argv)
 {
-    auto game = Game(true, 0.01, 10.0f, -50.0f);
+    auto game = Game(false, 0.01, 10.0f, -50.0f);
 
     if (game.Initialize())
     {

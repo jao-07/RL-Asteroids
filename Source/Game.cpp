@@ -445,10 +445,12 @@ void Game::DeleteActors() {
     mAsteroids.clear();
 }
 
-void Game::Reset() {
+std::vector<float> Game::Reset() {
     DeleteActors();
     InitializeActors();
     mStepsDone = 0;
+
+    return GetObservationSpace();
 }
 
 /* 0: Pos x da nave

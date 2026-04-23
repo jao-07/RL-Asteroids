@@ -51,7 +51,7 @@ public:
     static float GetWrappedDelta(float p1, float p2, float limit);
     float GetWrappedDistanceSq(const Actor* a, const Actor* b) const;
     void orderAsteroids();
-    void Reset();
+    std::vector<float> Reset();
 
     void SetAsteroidDestroyed(bool destroyed);
     std::tuple<std::vector<float>, float, bool, bool> Step(int action);
