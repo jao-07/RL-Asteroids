@@ -16,16 +16,20 @@
 #include "Random.h"
 #include "Actors/Particle.h"
 
-Game::Game(int windowWidth, int windowHeight)
-        :mWindow(nullptr)
+Game::Game(const bool visualize, const float timeReward, const float asteroidDestroyedReward, const float deathReward)
+        :mVisualize(visualize)
+        ,mWindow(nullptr)
         ,mRenderer(nullptr)
+        ,mWindowWidth(1024)
+        ,mWindowHeight(768)
         ,mTicksCount(0)
         ,mIsRunning(true)
         ,mUpdatingActors(false)
         ,mShip(nullptr)
-        ,mWindowWidth(windowWidth)
-        ,mWindowHeight(windowHeight)
         ,mGameState(GameState::Playing)
+        ,mTimeReward(timeReward)
+        ,mAsteroidDestroyedReward(asteroidDestroyedReward)
+        ,mDeathReward(deathReward)
 {
 
 }
@@ -38,14 +42,21 @@ bool Game::Initialize()
         return false;
     }
 
-    mWindow = SDL_CreateWindow("TP2: Asteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mWindowWidth, mWindowHeight, 0);
+    Uint32 windowFlags = mVisualize ? SDL_WINDOW_SHOWN : SDL_WINDOW_HIDDEN;
+
+    mWindow = SDL_CreateWindow("TP2: Asteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mWindowWidth, mWindowHeight, windowFlags);
     if (!mWindow)
     {
         SDL_Log("Failed to create window: %s", SDL_GetError());
         return false;
     }
 
-    mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    Uint32 renderFlags = SDL_RENDERER_ACCELERATED;
+    if (mVisualize) {
+        renderFlags |= SDL_RENDERER_PRESENTVSYNC;
+    }
+
+    mRenderer = SDL_CreateRenderer(mWindow, -1, renderFlags);
     if (!mRenderer)
     {
         SDL_Log("Failed to create renderer: %s", SDL_GetError());
@@ -57,7 +68,7 @@ bool Game::Initialize()
     mTicksCount = SDL_GetTicks();
 
     // Init all game actors
-    InitializeActors();
+    //InitializeActors();
 
     return true;
 }
@@ -77,16 +88,30 @@ void Game::InitializeActors()
 
 }
 
-void Game::RunLoop()
-{
-    GenerateOutput();
-    while (mIsRunning)
-    {
-        ProcessInput();
-        if (!mWaitingForAction) {
-            UpdateGame();
-            GenerateOutput();
+// void Game::RunLoop()
+// {
+//     GenerateOutput();
+//     while (mIsRunning)
+//     {
+//         ProcessInput();
+//         if (!mWaitingForAction) {
+//             UpdateGame();
+//             GenerateOutput();
+//         }
+//     }
+// }
+
+void Game::RunLoop() {
+    Reset();
+    while (mIsRunning) {
+        auto [obs, reward, terminated, truncated] = Step(1);
+        auto [obs2, reward2, terminated2, truncated2] = Step(2);
+
+        if (terminated or terminated2 or truncated or truncated2) {
+            SDL_Log("Terminated");
+            Reset();
         }
+
     }
 }
 
@@ -305,6 +330,7 @@ void Game::RemoveAsteroid(Asteroid* ast)
                     auto *newSmallAst = new Asteroid(this, AsteroidSize::Small, pos+offset);
                 }
             }
+            mAsteroidDestroyed = true;
         }
         else
             SDL_Log("Attempting to remove asteroid not in list");
@@ -395,11 +421,6 @@ void Game::GenerateOutput()
 
     // Swap front buffer and back buffer
     SDL_RenderPresent(mRenderer);
-
-    const std::vector<float> state = GetObservationSpace();
-    SDL_Log("state: %d", state.size());
-    for (auto s : state)
-        SDL_Log("%f", s);
 }
 
 void Game::Shutdown()
@@ -414,25 +435,17 @@ void Game::Shutdown()
     SDL_Quit();
 }
 
-void Game::DeleteAsteroids() {
-    for (int i = mAsteroids.size() - 1; i >= 0; i--) {
-        SDL_Log("Deleting asteroid %d", i);
-        mAsteroids[i]->SetState(ActorState::Destroy);
-        mAsteroids.pop_back();
-    }
-}
-
 void Game::DeleteActors() {
+    if (mActors.empty()) return;
     for (int i = mActors.size()-1; i >= 0; i--) {
         mActors[i]->SetState(ActorState::Destroy);
         mActors.pop_back();
     }
     mDrawables.clear();
+    mAsteroids.clear();
 }
 
 void Game::Reset() {
-    mShip->Reset();
-    DeleteAsteroids();
     DeleteActors();
     InitializeActors();
     mStepsDone = 0;
@@ -476,14 +489,20 @@ std::vector<float> Game::GetObservationSpace() const {
     return states;
 }
 
-float Game::CalculateReward() {
-    if (mShip->GetIsDead()) {
-        return -10.0f;
-    }
+float Game::CalculateReward() const {
+    float reward = mTimeReward;
+
+    if (mShip->GetIsDead())
+        reward += mDeathReward;
+
     if (mAsteroidDestroyed)
+        reward += mAsteroidDestroyedReward;
+
+    return reward;
 }
 
 std::tuple<std::vector<float>, float, bool, bool> Game::Step(int action) {
+    mAsteroidDestroyed = false;
     ApplyAction(static_cast<Action>(action));
 
     ProcessInput();

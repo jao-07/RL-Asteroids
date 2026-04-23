@@ -19,12 +19,13 @@
 class Game
 {
 public:
-    Game(int windowWidth, int windowHeight);
+    Game(bool visualize, float timeReward, float asteroidDestroyedReward, float deathReward);
 
     bool Initialize();
     void RunLoop();
     void Shutdown();
     void Quit() { mIsRunning = false; }
+    bool IsRunning() const { return mIsRunning; }
 
     void CreateAsteroids();
     void CreateParticles(Asteroid *ast, float min, float max);
@@ -52,6 +53,11 @@ public:
     void orderAsteroids();
     void Reset();
 
+    void SetAsteroidDestroyed(bool destroyed);
+    std::tuple<std::vector<float>, float, bool, bool> Step(int action);
+
+    bool mVisualize;
+    int mStepsDone = 0;
 
 private:
     void ProcessInput();
@@ -94,8 +100,8 @@ private:
     bool mWaitingForAction = true;
     int mFramesToProcess = 0;
     Action mSelectedAction = Action::NoAction;
-    bool mVisualize = false;
-    int mStepsDone = 0;
+
+
 
     void ApplyAction(Action action);
 
@@ -105,6 +111,11 @@ private:
     float MAX_LASER_COOLDOWN = 2.0f;
     int MAX_STEPS = 3000;
 
+    bool mAsteroidDestroyed = false;
+    float mTimeReward;
+    float mAsteroidDestroyedReward;
+    float mDeathReward;
+
     std::vector<float> GetObservationSpace() const;
-    std::tuple<std::vector<float>, float, bool, bool> Step(int action);
+    float CalculateReward() const;
 };

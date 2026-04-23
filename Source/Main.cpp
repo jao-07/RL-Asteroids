@@ -7,19 +7,48 @@
 // ----------------------------------------------------------------
 
 #include "Game.h"
+#include "Random.h"
 
-//Screen dimension constants
-const int SCREEN_WIDTH = 1024;
-const int SCREEN_HEIGHT = 768;
+// int main(int argc, char** argv)
+// {
+//     Game game = Game(true);
+//     bool success = game.Initialize();
+//     if (success)
+//     {
+//         game.RunLoop();
+//     }
+//     game.Shutdown();
+//     return 0;
+// }
 
 int main(int argc, char** argv)
 {
-    Game game = Game(SCREEN_WIDTH, SCREEN_HEIGHT);
-    bool success = game.Initialize();
-    if (success)
+    auto game = Game(true, 0.01, 10.0f, -50.0f);
+
+    if (game.Initialize())
     {
-        game.RunLoop();
+        int episodeCount = 0;
+        float totalReward = 0.0f;
+
+        game.Reset();
+        while (game.IsRunning())
+        {
+            int acaoSimulada = Random::GetIntRange(0,5);
+            auto [obs, reward, terminated, truncated] = game.Step(acaoSimulada);
+
+            totalReward += reward;
+
+            if (terminated || truncated)
+            {
+                SDL_Log("Episódio %d terminou! Recompensa Total: %f", episodeCount, totalReward);
+                game.Reset();
+
+                episodeCount++;
+                totalReward = 0.0f;
+            }
+        }
     }
+
     game.Shutdown();
     return 0;
 }
