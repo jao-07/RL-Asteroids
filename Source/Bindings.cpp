@@ -12,6 +12,8 @@ PYBIND11_MODULE(asteroids_cpp, m) {
     py::class_<Game>(m, "Game")
         .def(py::init<bool, float, float, float>())
 
+        .def("initialize", &Game::Initialize)
+        .def("shutdown", &Game::Shutdown)
         .def("step", &Game::Step)
         .def("reset", &Game::Reset)
 

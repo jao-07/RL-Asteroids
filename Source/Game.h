@@ -99,7 +99,7 @@ private:
 
     bool mWaitingForAction = true;
     int mFramesToProcess = 0;
-    Action mSelectedAction = Action::NoAction;
+    Action mSelectedAction = Action::Nothing;
 
 
 

@@ -15,8 +15,7 @@ enum class Action {
     Left,
     Shoot,
     Forward,
-    Nothing,
-    NoAction
+    Nothing
 };
 
 enum class ActorState
