@@ -4,8 +4,8 @@ from asteroids_env import AsteroidsEnv
 
 env = AsteroidsEnv(render_mode="none", survivalReward=0.1, asteroidDestroyedReward=5.0, deathReward=-50.0)
 
-params = {'alpha': 0.00017195082231670288,
-          'gamma': 0.9778366856839303,
+params = {'alpha': 1e-3,
+          'gamma': 0.9,
           'batch_size': 128,
           'buffer_size': 50000,
           'epsilon_decay': 0.9990115359881433,
@@ -13,24 +13,31 @@ params = {'alpha': 0.00017195082231670288,
           'train_freq': 4,
           'episodes': 2000}
 
-modelo_dqn = DQN("MlpPolicy", 
-    env, 
-    verbose=1, 
-    buffer_size=params['buffer_size'],
-    batch_size=params['batch_size'],
-    train_freq=params['train_freq'], 
-    gamma=params["gamma"], 
-    exploration_fraction=0.5,
-    exploration_initial_eps=1,
-    exploration_final_eps=0.1, 
-    target_update_interval=params['target_update'], 
-    learning_rate=params['alpha'],
-    tensorboard_log="./logs_tensorboard/"
-    )
+# dqn_model = DQN("MlpPolicy",
+#     env,
+#     verbose=1,
+#     buffer_size=params['buffer_size'],
+#     batch_size=params['batch_size'],
+#     train_freq=params['train_freq'],
+#     gamma=params["gamma"],
+#     exploration_fraction=0.5,
+#     exploration_initial_eps=1,
+#     exploration_final_eps=0.1,
+#     target_update_interval=params['target_update'],
+#     learning_rate=params['alpha'],
+#     tensorboard_log="./logs_tensorboard/"
+#     )
 
-modelo_dqn.learn(total_timesteps=200000, progress_bar=True)
+new_parameters = {
+    "exploration_fraction": 0.1,
+    "exploration_initial_eps": 0.1,
+    "exploration_final_eps": 0.01
+}
+
+dqn_model = DQN.load("dqn_asteroids_15_2400000steps", env=env, custom_objects=new_parameters)
+dqn_model.learn(total_timesteps=1000000, progress_bar=True)
 print("Treinamento finalizado. Salvando o modelo...")
-modelo_dqn.save("dqn_asteroids_teste")
+dqn_model.save("dqn_asteroids_FT_exp_frac_1M")
 
 # print("Executando 100 passos de simulação...")
 

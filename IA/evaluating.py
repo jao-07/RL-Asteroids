@@ -5,24 +5,24 @@ print("Carregando o ambiente com interface gráfica...")
 env = AsteroidsEnv(render_mode="human")
 
 print("Carregando o modelo treinado...")
-modelo = DQN.load("dqn_asteroids_teste")
+model = DQN.load("dqn_asteroids_15_2400000steps")
 
 obs, _ = env.reset()
-terminou = False
-recompensa_total = 0.0
+done = False
+total_reward = 0.0
 
 print("Deixando a IA jogar...")
 
 while True:
-    acao, _estados_internos = modelo.predict(obs, deterministic=True)
+    acao, _estados_internos = model.predict(obs, deterministic=True)
     
-    obs, recompensa, term, trunc, _ = env.step(acao)
+    obs, recompensa, done, trunc, _ = env.step(acao)
     
-    recompensa_total += recompensa
-    if term or trunc:
-        print(f"\nFim de jogo! Recompensa total da IA: {recompensa_total:.2f}")
+    total_reward += recompensa
+    if done or trunc:
+        print(f"\nFim de jogo! Recompensa total da IA: {total_reward:.2f}")
         obs, _ = env.reset()
-        recompensa_total = 0
+        total_reward = 0
 
 print(f"\nFim de jogo! Recompensa total da IA: {recompensa_total:.2f}")
 
