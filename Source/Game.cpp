@@ -480,13 +480,21 @@ std::vector<float> Game::GetObservationSpace() const {
     states.emplace_back(mShip->GetComponent<RigidBodyComponent>()->GetVelocity().y / MAX_SHIP_VELOCITY);
     states.emplace_back(mShip->GetLaserCoolDown() / MAX_LASER_COOLDOWN);
 
-    //Dados dos 5 asteroids mais próximos
-    for (int i=0; i<5; i++) {
-        states.emplace_back(GetWrappedDelta(mShip->GetPosition().x, mAsteroids[i]->GetPosition().x, static_cast<float>(mWindowWidth)) / static_cast<float>(mWindowWidth));
-        states.emplace_back(GetWrappedDelta(mShip->GetPosition().y, mAsteroids[i]->GetPosition().y, static_cast<float>(mWindowHeight)) / static_cast<float>(mWindowHeight));
-        states.emplace_back(mAsteroids[i]->GetComponent<CircleColliderComponent>()->GetRadius() / MAX_RADIUS);
-        states.emplace_back(mAsteroids[i]->GetComponent<RigidBodyComponent>()->GetVelocity().x / MAX_ASTEROID_VELOCITY);
-        states.emplace_back(mAsteroids[i]->GetComponent<RigidBodyComponent>()->GetVelocity().y / MAX_ASTEROID_VELOCITY);
+    //Dados dos 15 asteroids mais próximos
+    auto size = mAsteroids.size();
+    for (int i=0; i<15; i++) {
+        if (i < size) {
+            states.emplace_back(GetWrappedDelta(mShip->GetPosition().x, mAsteroids[i]->GetPosition().x, static_cast<float>(mWindowWidth)) / static_cast<float>(mWindowWidth));
+            states.emplace_back(GetWrappedDelta(mShip->GetPosition().y, mAsteroids[i]->GetPosition().y, static_cast<float>(mWindowHeight)) / static_cast<float>(mWindowHeight));
+            states.emplace_back(mAsteroids[i]->GetComponent<CircleColliderComponent>()->GetRadius() / MAX_RADIUS);
+            states.emplace_back(mAsteroids[i]->GetComponent<RigidBodyComponent>()->GetVelocity().x / MAX_ASTEROID_VELOCITY);
+            states.emplace_back(mAsteroids[i]->GetComponent<RigidBodyComponent>()->GetVelocity().y / MAX_ASTEROID_VELOCITY);
+        }
+        else {
+            for (int j=0; j<5; j++) {
+                states.emplace_back(0.0f);
+            }
+        }
     }
     return states;
 }

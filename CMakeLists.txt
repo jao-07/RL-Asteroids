@@ -34,6 +34,11 @@ pybind11_add_module(asteroids_cpp
 
 target_include_directories(asteroids_cpp PRIVATE ${pybind11_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS})
 target_link_libraries(asteroids_cpp PRIVATE pybind11::module ${SDL2_LIBRARIES})
+set_target_properties(asteroids_cpp PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/IA"
+        LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_SOURCE_DIR}/IA"
+        LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/IA"
+)
 
 add_executable(${PROJECT_NAME}
         Source/Main.cpp
