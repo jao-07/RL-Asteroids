@@ -9,7 +9,8 @@ project(${PROJECT_NAME})
 find_package(SDL2 2.32.2 EXACT REQUIRED)
 
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
-set(pybind11_DIR "C:/Users/joaovecruz/Desktop/TCC/.venv/Lib/site-packages/pybind11/share/cmake/pybind11")
+#set(pybind11_DIR "C:/Users/joaovecruz/Desktop/TCC/.venv/Lib/site-packages/pybind11/share/cmake/pybind11")
+set(pybind11_DIR "C:/Users/joaov/miniconda3/envs/ia_projeto/Lib/site-packages/pybind11/share/cmake/pybind11")
 find_package(pybind11 CONFIG REQUIRED)
 
 set(GAME_SOURCES
