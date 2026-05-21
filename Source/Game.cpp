@@ -491,9 +491,11 @@ std::vector<float> Game::GetObservationSpace() const {
             states.emplace_back(mAsteroids[i]->GetComponent<RigidBodyComponent>()->GetVelocity().y / MAX_ASTEROID_VELOCITY);
         }
         else {
-            for (int j=0; j<5; j++) {
-                states.emplace_back(0.0f);
-            }
+            states.emplace_back(5.0f);
+            states.emplace_back(5.0f);
+            states.emplace_back(0.0f);
+            states.emplace_back(0.0f);
+            states.emplace_back(0.0f);
         }
     }
     return states;
