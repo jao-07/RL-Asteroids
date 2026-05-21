@@ -50,12 +50,13 @@ public:
     void AddAsteroid(class Asteroid* ast);
     void RemoveAsteroid(class Asteroid* ast);
     std::vector<class Asteroid*>& GetAsteroids() { return mAsteroids; }
-    std::vector<class Asteroid*>& GetAsteroidsSmall() { return mAsteroidsSmall; }
 
 private:
     void ProcessInput();
     void UpdateGame();
     void GenerateOutput();
+    void DeleteActors();
+    void Reset();
 
     // All the actors in the game
     std::vector<class Actor*> mActors;
@@ -82,7 +83,6 @@ private:
     // Game-specific
     class Ship* mShip;
     std::vector<class Asteroid*> mAsteroids;
-    std::vector<class Asteroid*> mAsteroidsSmall;
 
     //Track the pauses between the asteroids waves
     GameState mGameState;

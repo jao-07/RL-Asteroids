@@ -17,12 +17,16 @@ public:
     void OnUpdate(float deltaTime) override;
     void Reset();
 
+    bool GetIsDead() {return mIsDead;}
+
 private:
     float mForwardSpeed;
     float mRotationForce;
     float mFrictionCoefficient;
     float mLaserCooldown;
     float mHeight;
+
+    bool mIsDead = false;
 
     class DrawComponent* mDrawComponent;
     class RigidBodyComponent* mRigidBodyComponent;
