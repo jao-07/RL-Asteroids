@@ -87,4 +87,8 @@ private:
     //Track the pauses between the asteroids waves
     GameState mGameState;
     Uint32 mPauseTime;
+
+    bool allowSplitAsteroids = false;
+    int asteroidsNumber = 5;
+
 };

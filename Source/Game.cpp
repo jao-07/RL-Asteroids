@@ -63,7 +63,7 @@ bool Game::Initialize()
 }
 
 void Game::CreateAsteroids() {
-    for (int i=0; i < 10; i++) {
+    for (int i=0; i < asteroidsNumber; i++) {
         auto* ast = new Asteroid(this, AsteroidSize::Large);
     }
 }
@@ -132,13 +132,11 @@ void Game::UpdateGame()
     }
 
     if (mGameState == GameState::Waiting) {
-        SDL_Log("IsDead: %d",  mShip->GetIsDead());
         if (SDL_GetTicks() - mPauseTime >= 1000) {
             Reset();
             mGameState = GameState::Playing;
         }
     }
-    // SDL_Log("IsDead: %d",  mShip->GetIsDead());
 }
 
 void Game::UpdateActors(float deltaTime)
@@ -201,7 +199,7 @@ void Game::RemoveAsteroid(Asteroid* ast)
         std::iter_swap(iter, mAsteroids.end() - 1);
         mAsteroids.pop_back();
 
-        if (isLarge) {
+        if (isLarge && allowSplitAsteroids) {
             for (int i=0; i<3; i++) {
                 Vector2 offset = Random::GetVector(Vector2(-10.0f, -10.0f), Vector2(10.0f, 10.0f));
                 auto *newSmallAst = new Asteroid(this, AsteroidSize::Small, pos+offset);

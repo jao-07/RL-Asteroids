@@ -68,7 +68,7 @@ void Ship::OnProcessInput(const uint8_t* state)
         l->SetPosition(this->mPosition + GetForward() * mHeight);
         l->SetRotation(this->mRotation);
         l->GetComponent<RigidBodyComponent>()->ApplyForce(GetForward() * 3000.f);
-        mLaserCooldown = 2;
+        mLaserCooldown = 0.5;
     }
 
     mRigidBodyComponent->SetAngularSpeed(angularSpeed);
