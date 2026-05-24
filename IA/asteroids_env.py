@@ -3,9 +3,6 @@ import numpy as np
 import asteroids_cpp
 
 class AsteroidsEnv(gym.Env):
-    """
-    Wrapper do Gymnasium para a engine do Asteroids em C++.
-    """
 
     def __init__(self, render_mode="none", survivalReward=0.01, asteroidDestroyedReward=10.0, deathReward=-50.0):
         super().__init__()

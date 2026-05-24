@@ -54,7 +54,7 @@ if __name__ == "__main__":
     study.optimize(objective, n_trials=30, n_jobs=1, show_progress_bar=True)
 
     print("\n=======================================================")
-    print("🚀 MELHOR CONFIGURAÇÃO ENCONTRADA PELO OPTUNA:")
+    print("MELHOR CONFIGURAÇÃO ENCONTRADA PELO OPTUNA:")
     print("=======================================================")
     print(f"Recompensa Máxima Média: {study.best_value:.2f}")
     print("Hiperparâmetros a usar no treino principal:")
