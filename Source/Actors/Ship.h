@@ -9,7 +9,7 @@ class Ship : public Actor
 {
 public:
     explicit Ship(Game* game, float height,
-                              float forwardForce = 500.0f,
+                              float forwardForce = 200.0f,
                               float rotationForce = 5.0f,
                               float frictionCoefficient = 0.005f);
 
