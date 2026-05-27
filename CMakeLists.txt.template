@@ -9,7 +9,9 @@ project(${PROJECT_NAME})
 find_package(SDL2 2.32.2 EXACT REQUIRED)
 
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
-#Adicionar -DCMAKE_PREFIX_PATH="C:/Users/joaov/miniconda3/envs/ia_projeto/Lib/site-packages/pybind11" nas configurações do cmake
+#Procurar onde está o arquivo pybind11Config.cmake e adicionar nas configurações do cmake do CLion:
+#Notebook: -DCMAKE_PREFIX_PATH="C:/Users/joaov/miniconda3/envs/ia_projeto/Lib/site-packages/pybind11"
+#-DCMAKE_PREFIX_PATH="C:\Users\joaovecruz\CLionProjects\tp2-asteroids-jao-07\.venv\Lib\site-packages\pybind11\share\cmake\pybind11"
 find_package(pybind11 CONFIG REQUIRED)
 
 set(GAME_SOURCES
