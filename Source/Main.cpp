@@ -34,11 +34,13 @@ int main(int argc, char** argv)
         game.Reset();
         while (game.IsRunning())
         {
-            int acaoSimulada = Random::GetIntRange(0,5);
-            // int acaoSimulada = 2;
+            // int acaoSimulada = Random::GetIntRange(0,5);
+            int acaoSimulada = 3;
             auto [obs, reward, terminated, truncated] = game.Step(acaoSimulada);
-
-
+            SDL_Log("Obs:");
+            for (auto ob : obs) {
+                SDL_Log("%f", ob);
+            }
             totalReward += reward;
 
             if (terminated || truncated)

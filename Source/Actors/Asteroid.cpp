@@ -36,7 +36,7 @@ Asteroid::Asteroid(Game* game, AsteroidSize size, Vector2 position, const int nu
         vertices = GenerateVertices(numVertices, 40);
         averageLength = CalculateAverageVerticesLength(vertices);
         SetPosition(position);
-        randStartingForce = GenerateRandomStartingForce(2100.0f, 2400.0f);
+        randStartingForce = GenerateRandomStartingForce(2200.0f, 2500.0f);
     }
 
     mDrawComponent = new DrawComponent(this, vertices);

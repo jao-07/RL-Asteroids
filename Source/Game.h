@@ -103,10 +103,10 @@ private:
 
     void ApplyAction(Action action);
 
-    float MAX_SHIP_VELOCITY = 300.0f;
+    float MAX_SHIP_VELOCITY = 200.0f;
     float MAX_ASTEROID_VELOCITY = 40.0f;
     float MAX_RADIUS = 80.0f;
-    float MAX_LASER_COOLDOWN = 2.0f;
+    float MAX_LASER_COOLDOWN = 0.5f;
     int MAX_STEPS = 3000;
 
     bool mAllowSplitAsteroids;
