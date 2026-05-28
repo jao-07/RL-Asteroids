@@ -32,6 +32,7 @@ void Laser::OnUpdate(float deltaTime)
     if(mDeathTimer <= 0) {
         SetState(ActorState::Destroy);
         mGame->SetLasersMissed(true);
+        SDL_Log("Lasers missed");
     }
 
     const std::vector<Asteroid*> Asteroids = mGame->GetAsteroids();
@@ -43,4 +44,7 @@ void Laser::OnUpdate(float deltaTime)
             break;
         }
     }
+
+    Vector2 posicao = GetPosition();
+    SDL_Log(" Posicao do laser: X=%f, Y=%f", posicao.x, posicao.y);
 }

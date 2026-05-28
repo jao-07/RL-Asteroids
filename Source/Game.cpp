@@ -188,7 +188,7 @@ void Game::UpdateGame() {
              actor->ProcessInput(mSelectedAction);
          }
 
-        constexpr float fixedDT = 1.0f / 120.0f;
+        constexpr float fixedDT = 32.0f / 1000.0f;
         UpdateActors(fixedDT);
     }
 }

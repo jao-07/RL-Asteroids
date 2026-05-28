@@ -34,10 +34,8 @@ int main(int argc, char** argv)
         game.Reset();
         while (game.IsRunning())
         {
-            // while (!SDL_TICKS_PASSED(SDL_GetTicks(), tickAnterior + 32));
-            // tickAnterior = SDL_GetTicks();
             // int acaoSimulada = Random::GetIntRange(0,5);
-            int acaoSimulada = 1;
+            int acaoSimulada = 2;
             auto [obs, reward, terminated, truncated] = game.Step(acaoSimulada);
 
 
