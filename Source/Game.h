@@ -19,7 +19,7 @@
 class Game
 {
 public:
-    Game(bool visualize, float timeReward, float asteroidDestroyedReward, float deathReward);
+    Game(bool visualize, int difficulty);
 
     bool Initialize();
     void RunLoop();
@@ -53,8 +53,10 @@ public:
     void orderAsteroids();
     std::vector<float> Reset();
 
-    void SetAsteroidDestroyed(bool destroyed);
+    //void SetAsteroidDestroyed(bool destroyed);
     std::tuple<std::vector<float>, float, bool, bool> Step(int action);
+
+    void SetLasersMissed(bool state) { mLaserMissedInTheStep = state; }
 
     bool mVisualize;
     int mStepsDone = 0;
@@ -63,8 +65,6 @@ private:
     void ProcessInput();
     void UpdateGame();
     void GenerateOutput();
-
-    void DeleteAsteroids();
     void DeleteActors();
 
     // All the actors in the game
@@ -95,13 +95,11 @@ private:
 
     //Track the pauses between the asteroids waves
     GameState mGameState;
-    Uint32 mPauseTime;
+    Uint32 mPauseTime = 0;
 
     bool mWaitingForAction = true;
     int mFramesToProcess = 0;
     Action mSelectedAction = Action::Nothing;
-
-
 
     void ApplyAction(Action action);
 
@@ -111,10 +109,16 @@ private:
     float MAX_LASER_COOLDOWN = 2.0f;
     int MAX_STEPS = 3000;
 
+    bool mAllowSplitAsteroids;
+    int mAsteroidsNumber;
     bool mAsteroidDestroyed = false;
+    bool mLaserMissedInTheStep = false;
+
     float mTimeReward;
-    float mAsteroidDestroyedReward;
     float mDeathReward;
+    float mAsteroidDestroyedReward;
+    float mLasersMissedReward;
+    float mAllAsteroidsDestroyedReward;
 
     std::vector<float> GetObservationSpace() const;
     float CalculateReward() const;

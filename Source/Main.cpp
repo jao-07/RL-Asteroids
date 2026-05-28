@@ -23,18 +23,23 @@
 
 int main(int argc, char** argv)
 {
-    auto game = Game(false, 0.01, 10.0f, -50.0f);
+    auto game = Game(true, 1);
 
     if (game.Initialize())
     {
         int episodeCount = 0;
         float totalReward = 0.0f;
+        Uint32 tickAnterior = SDL_GetTicks();
 
         game.Reset();
         while (game.IsRunning())
         {
-            int acaoSimulada = Random::GetIntRange(0,5);
+            // while (!SDL_TICKS_PASSED(SDL_GetTicks(), tickAnterior + 32));
+            // tickAnterior = SDL_GetTicks();
+            // int acaoSimulada = Random::GetIntRange(0,5);
+            int acaoSimulada = 1;
             auto [obs, reward, terminated, truncated] = game.Step(acaoSimulada);
+
 
             totalReward += reward;
 

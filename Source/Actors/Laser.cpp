@@ -26,46 +26,20 @@ Laser::Laser(Game* game, const float length, const float deathTimer)
     mCircleColliderComponent = new CircleColliderComponent(this, mLength);
 }
 
-// void Laser::OnUpdate(float deltaTime)
-// {
-//     mDeathTimer -= deltaTime;
-//     if(mDeathTimer <= 0)
-//         SetState(ActorState::Destroy);
-//
-//     std::vector<Asteroid*> BigAsteroids = mGame->GetBigAsteroids();
-//     for (int i=0; i<BigAsteroids.size(); i++) {
-//         auto *ast = BigAsteroids[i]->GetComponent<CircleColliderComponent>();
-//         if (this->mCircleColliderComponent->Intersect(*ast)) {
-//             SDL_Log("Asteroid (%f, %f) hit", BigAsteroids[i]->GetPosition().x, BigAsteroids[i]->GetPosition().y);
-//             SetState(ActorState::Destroy);
-//             BigAsteroids[i]->SetState(ActorState::Destroy);
-//             break;
-//         }
-//     }
-//
-//     std::vector<Asteroid*> asteroidsSmall = mGame->GetSmallAsteroids();
-//     for (int i=0; i<asteroidsSmall.size(); i++) {
-//         auto *ast = asteroidsSmall[i]->GetComponent<CircleColliderComponent>();
-//         if (this->mCircleColliderComponent->Intersect(*ast)) {
-//             SetState(ActorState::Destroy);
-//             asteroidsSmall[i]->SetState(ActorState::Destroy);
-//             break;
-//         }
-//     }
-// }
-
 void Laser::OnUpdate(float deltaTime)
 {
     mDeathTimer -= deltaTime;
-    if(mDeathTimer <= 0)
+    if(mDeathTimer <= 0) {
         SetState(ActorState::Destroy);
+        mGame->SetLasersMissed(true);
+    }
 
     const std::vector<Asteroid*> Asteroids = mGame->GetAsteroids();
-    for (int i=0; i<Asteroids.size(); i++) {
-        if (auto *ast = Asteroids[i]->GetComponent<CircleColliderComponent>(); this->mCircleColliderComponent->Intersect(*ast)) {
+    for (auto Asteroid : Asteroids) {
+        if (auto *ast = Asteroid->GetComponent<CircleColliderComponent>(); this->mCircleColliderComponent->Intersect(*ast)) {
             //SDL_Log("Asteroid (%f, %f) hit", Asteroids[i]->GetPosition().x, Asteroids[i]->GetPosition().y);
             SetState(ActorState::Destroy);
-            Asteroids[i]->SetState(ActorState::Destroy);
+            Asteroid->SetState(ActorState::Destroy);
             break;
         }
     }

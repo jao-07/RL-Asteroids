@@ -4,15 +4,13 @@ import asteroids_cpp
 
 class AsteroidsEnv(gym.Env):
 
-    def __init__(self, render_mode="none", survivalReward=0.01, asteroidDestroyedReward=10.0, deathReward=-50.0):
+    def __init__(self, render_mode="none", difficulty=1):
         super().__init__()
         self.render_mode = render_mode
-        self.survivalReward = survivalReward
-        self.asteroidDestroyedReward = asteroidDestroyedReward
-        self.deathReward = deathReward
+        self.difficulty = difficulty
 
         visualize = (self.render_mode == "human")
-        self.game = asteroids_cpp.Game(visualize, survivalReward, asteroidDestroyedReward, deathReward)
+        self.game = asteroids_cpp.Game(visualize, difficulty)
         success = self.game.initialize()
         if not success:
             print("Error in the SDL Window creation!")
@@ -24,7 +22,7 @@ class AsteroidsEnv(gym.Env):
         self.observation_space = gym.spaces.Box(
             low=-1, 
             high=1,
-            shape=(83,),
+            shape=(82,),
             dtype=np.float32
         )
 
