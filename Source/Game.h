@@ -22,7 +22,7 @@ enum class GameState
 class Game
 {
 public:
-    Game(int windowWidth, int windowHeight);
+    Game(int windowWidth, int windowHeight, int difficulty=1);
 
     bool Initialize();
     void RunLoop();
@@ -51,12 +51,15 @@ public:
     void RemoveAsteroid(class Asteroid* ast);
     std::vector<class Asteroid*>& GetAsteroids() { return mAsteroids; }
 
+    void SetLasersMissed(bool state) { mLaserMissedInTheStep = state; }
+
 private:
     void ProcessInput();
     void UpdateGame();
     void GenerateOutput();
     void DeleteActors();
     void Reset();
+    float CalculateReward() const;
 
     // All the actors in the game
     std::vector<class Actor*> mActors;
@@ -83,12 +86,21 @@ private:
     // Game-specific
     class Ship* mShip;
     std::vector<class Asteroid*> mAsteroids;
+    int mDifficulty;
 
     //Track the pauses between the asteroids waves
     GameState mGameState;
-    Uint32 mPauseTime;
+    Uint32 mPauseTime = 0;
 
-    bool allowSplitAsteroids = false;
-    int asteroidsNumber = 5;
+    bool mAllowSplitAsteroids;
+    int mAsteroidsNumber;
+    bool mAsteroidDestroyed = false;
+    bool mLaserMissedInTheStep = false;
+
+    float mTimeReward;
+    float mDeathReward;
+    float mAsteroidDestroyedReward;
+    float mLasersMissedReward;
+    float mAllAsteroidsDestroyedReward;
 
 };
