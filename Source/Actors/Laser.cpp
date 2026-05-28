@@ -45,6 +45,6 @@ void Laser::OnUpdate(float deltaTime)
         }
     }
 
-    Vector2 posicao = GetPosition();
-    SDL_Log(" Posicao do laser: X=%f, Y=%f", posicao.x, posicao.y);
+    // Vector2 posicao = GetPosition();
+    // SDL_Log(" Posicao do laser: X=%f, Y=%f", posicao.x, posicao.y);
 }

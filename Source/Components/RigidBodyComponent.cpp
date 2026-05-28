@@ -39,11 +39,11 @@ void RigidBodyComponent::Update(float deltaTime)
     // TODO 2.1 (2 linhas): Atualize a velocidade (mVelocity) e a posição (position) do objeto utilizando
     //  o método de Euler semi-implícito.
     mVelocity += mAcceleration * deltaTime;
-    mVelocity.x = mVelocity.x > mMaxVelocity ? mMaxVelocity : mVelocity.x;
-    mVelocity.y = mVelocity.y > mMaxVelocity ? mMaxVelocity : mVelocity.y;
-
-    mVelocity.x = mVelocity.x < mMinVelocity ? mMinVelocity : mVelocity.x;
-    mVelocity.y = mVelocity.y < mMinVelocity ? mMinVelocity : mVelocity.y;
+    // mVelocity.x = mVelocity.x > mMaxVelocity ? mMaxVelocity : mVelocity.x;
+    // mVelocity.y = mVelocity.y > mMaxVelocity ? mMaxVelocity : mVelocity.y;
+    //
+    // mVelocity.x = mVelocity.x < mMinVelocity ? mMinVelocity : mVelocity.x;
+    // mVelocity.y = mVelocity.y < mMinVelocity ? mMinVelocity : mVelocity.y;
 
     position += mVelocity * deltaTime;
 

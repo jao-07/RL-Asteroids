@@ -134,7 +134,7 @@ void Game::RunLoop() {
 void Game::ApplyAction(Action action) {
     mSelectedAction = action;
     mWaitingForAction = false;
-    mFramesToProcess = 4;
+    mFramesToProcess = 1;
 }
 
 void Game::ProcessInput() {
@@ -188,8 +188,16 @@ void Game::UpdateGame() {
              actor->ProcessInput(mSelectedAction);
          }
 
-        constexpr float fixedDT = 32.0f / 1000.0f;
+        constexpr float fixedDT = 16.0f / 1000.0f;
         UpdateActors(fixedDT);
+
+        if (mVisualize) {
+            GenerateOutput();
+
+            static Uint32 tickAnterior = SDL_GetTicks();
+            while (!SDL_TICKS_PASSED(SDL_GetTicks(), tickAnterior + 16));
+            tickAnterior = SDL_GetTicks();
+        }
     }
 }
 
@@ -483,8 +491,6 @@ std::tuple<std::vector<float>, float, bool, bool> Game::Step(int action) {
 
     ProcessInput();
     UpdateGame();
-    if (mVisualize)
-        GenerateOutput();
 
     mStepsDone++;
 

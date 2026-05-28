@@ -34,8 +34,8 @@ int main(int argc, char** argv)
         game.Reset();
         while (game.IsRunning())
         {
-            // int acaoSimulada = Random::GetIntRange(0,5);
-            int acaoSimulada = 2;
+            int acaoSimulada = Random::GetIntRange(0,5);
+            // int acaoSimulada = 2;
             auto [obs, reward, terminated, truncated] = game.Step(acaoSimulada);
 
 
