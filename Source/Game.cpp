@@ -16,7 +16,7 @@
 #include "Random.h"
 #include "Actors/Particle.h"
 
-Game::Game(const bool visualize, const float timeReward, const float asteroidDestroyedReward, const float deathReward)
+Game::Game(const bool visualize, int difficulty)
         :mVisualize(visualize)
         ,mWindow(nullptr)
         ,mRenderer(nullptr)
@@ -27,11 +27,27 @@ Game::Game(const bool visualize, const float timeReward, const float asteroidDes
         ,mUpdatingActors(false)
         ,mShip(nullptr)
         ,mGameState(GameState::Playing)
-        ,mTimeReward(timeReward)
-        ,mAsteroidDestroyedReward(asteroidDestroyedReward)
-        ,mDeathReward(deathReward)
+        ,mAsteroidDestroyedReward(10.0f)
+        ,mDeathReward(-50.0f)
+        ,mAllAsteroidsDestroyedReward(50.0f)
 {
-
+        if (difficulty == 1) {
+        mAsteroidsNumber = 2;
+        mAllowSplitAsteroids = false;
+        mTimeReward = 0.1f;
+    }
+    else if (difficulty == 2) {
+        mAsteroidsNumber = 5;
+        mAllowSplitAsteroids = true;
+        mTimeReward = 0.0f;
+        mLasersMissedReward = -0.1f;
+    }
+    else {
+        mAsteroidsNumber = 10;
+        mAllowSplitAsteroids = true;
+        mTimeReward = 0.0f;
+        mLasersMissedReward = -0.5f;
+    }
 }
 
 bool Game::Initialize()
