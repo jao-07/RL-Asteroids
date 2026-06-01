@@ -32,7 +32,6 @@ void Laser::OnUpdate(float deltaTime)
     if(mDeathTimer <= 0) {
         SetState(ActorState::Destroy);
         mGame->SetLasersMissed(true);
-        SDL_Log("Lasers missed");
     }
 
     const std::vector<Asteroid*> Asteroids = mGame->GetAsteroids();

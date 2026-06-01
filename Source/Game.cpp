@@ -27,25 +27,26 @@ Game::Game(const bool visualize, int difficulty)
         ,mUpdatingActors(false)
         ,mShip(nullptr)
         ,mGameState(GameState::Playing)
-        ,mAsteroidDestroyedReward(10.0f)
-        ,mDeathReward(-50.0f)
-        ,mAllAsteroidsDestroyedReward(50.0f)
+        ,mAsteroidDestroyedReward(1.0f)
+        ,mDeathReward(-2.0f)
+        ,mAllAsteroidsDestroyedReward(5.0f)
 {
         if (difficulty == 1) {
-            mAsteroidsNumber = 2;
+            mAsteroidsNumber = 4;
             mAllowSplitAsteroids = false;
-            mTimeReward = 0.1f;
+            mTimeReward = -0.004f;
+            mLasersMissedReward = -0.01f;
         }
         else if (difficulty == 2) {
             mAsteroidsNumber = 5;
             mAllowSplitAsteroids = true;
-            mTimeReward = 0.0f;
+            mTimeReward = -0.01f;
             mLasersMissedReward = -0.1f;
         }
         else {
             mAsteroidsNumber = 10;
             mAllowSplitAsteroids = true;
-            mTimeReward = 0.0f;
+            mTimeReward = -0.05f;
             mLasersMissedReward = -0.5f;
         }
 }
@@ -292,7 +293,7 @@ void Game::RemoveAsteroid(Asteroid* ast)
             std::iter_swap(iter, mAsteroids.end() - 1);
             mAsteroids.pop_back();
 
-            if (isLarge) {
+            if (isLarge && mAllowSplitAsteroids) {
                 for (int i=0; i<3; i++) {
                     Vector2 offset = Random::GetVector(Vector2(-10.0f, -10.0f), Vector2(10.0f, 10.0f));
                     auto *newSmallAst = new Asteroid(this, AsteroidSize::Small, pos+offset);
@@ -487,6 +488,7 @@ float Game::CalculateReward() const {
 
 std::tuple<std::vector<float>, float, bool, bool> Game::Step(int action) {
     mAsteroidDestroyed = false;
+    mLaserMissedInTheStep = false;
     ApplyAction(static_cast<Action>(action));
 
     ProcessInput();
