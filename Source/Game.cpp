@@ -325,6 +325,10 @@ void Game::Shutdown()
     SDL_Quit();
 }
 
+bool Game::CalculateDistanceAndDirectionToTheNearestAsteroid() {
+
+}
+
 float Game::CalculateReward() const {
     float reward = mTimeReward;
 

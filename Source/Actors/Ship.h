@@ -9,9 +9,9 @@ class Ship : public Actor
 {
 public:
     explicit Ship(Game* game, float height,
-                              float forwardForce = 200.0f,
-                              float rotationForce = 5.0f,
-                              float frictionCoefficient = 0.005f);
+                              float forwardForce = 800.0f,
+                              float rotationForce = 3.0f,
+                              float frictionCoefficient = 0.2f);
 
     void OnProcessInput(const Uint8* keyState) override;
     void OnUpdate(float deltaTime) override;

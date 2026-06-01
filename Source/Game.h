@@ -59,6 +59,7 @@ private:
     void GenerateOutput();
     void DeleteActors();
     void Reset();
+    bool CalculateDistanceAndDirectionToTheNearestAsteroid();
     float CalculateReward() const;
 
     // All the actors in the game

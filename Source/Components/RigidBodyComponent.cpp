@@ -48,7 +48,7 @@ void RigidBodyComponent::Update(float deltaTime)
     // TODO 2.2 (~3 linhas): Utilize a função Math::NearZero para verificar se o comprimento do vetor
     //  velocidade (mVelocity) está próximo de zero. Se estiver, use a função mVelocity.Set() para
     //  forçar velocidade zero. Isso evita movimentos muito pequenos.
-    if (Math::NearZero(mVelocity.x) && Math::NearZero(mVelocity.y)) {
+    if (Math::NearZero(mVelocity.x, 5) && Math::NearZero(mVelocity.y, 5)) {
         mVelocity.Set(0, 0);
     }
 
