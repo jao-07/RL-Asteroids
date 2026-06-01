@@ -23,7 +23,7 @@
 
 int main(int argc, char** argv)
 {
-    auto game = Game(false, 1);
+    auto game = Game(true, 1);
 
     if (game.Initialize())
     {
@@ -33,7 +33,8 @@ int main(int argc, char** argv)
         game.Reset();
         while (game.IsRunning())
         {
-            int acaoSimulada = Random::GetIntRange(0,5);
+            // int acaoSimulada = Random::GetIntRange(0,5);
+            int acaoSimulada = 3;
             auto [obs, reward, terminated, truncated] = game.Step(acaoSimulada);
             totalReward += reward;
 

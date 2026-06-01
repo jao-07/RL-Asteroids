@@ -20,6 +20,6 @@ modelo_ppo = PPO(
     tensorboard_log="./ppo_diff1/"
 )
 
-modelo_ppo.learn(total_timesteps=200000, tb_log_name="ppo_diff1_200mil_missRew", progress_bar=True)
+modelo_ppo.learn(total_timesteps=1000000, tb_log_name="ppo_diff1_1M_new", progress_bar=True)
 
-modelo_ppo.save("ppo_diff1_200mil_missRew")
+modelo_ppo.save("ppo_diff1_1M_new")

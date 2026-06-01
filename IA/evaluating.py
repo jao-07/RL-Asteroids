@@ -5,7 +5,7 @@ print("Carregando o ambiente com interface gráfica...")
 env = AsteroidsEnv(render_mode="human")
 
 print("Carregando o modelo treinado...")
-model = PPO.load("ppo_diff1_200mil_missRew")
+model = PPO.load("ppo_diff1_1M_new")
 
 obs, _ = env.reset()
 done = False

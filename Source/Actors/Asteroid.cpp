@@ -26,17 +26,19 @@ Asteroid::Asteroid(Game* game, AsteroidSize size, Vector2 position, const int nu
         vertices = GenerateVertices(numVertices, 80);
         averageLength = CalculateAverageVerticesLength(vertices);
         Vector2 pos = Random::GetVector(Vector2::Zero, Vector2(mGame->GetWindowWidth(), mGame->GetWindowHeight()));
-        while (!(pos.y > (mGame->GetWindowHeight() - 200) || pos.y < 200))
+        while (!((pos.y > 484 || pos.y < 284) && (pos.x > 612 || pos.x < 412)))
             pos = Random::GetVector(Vector2::Zero, Vector2(mGame->GetWindowWidth(), mGame->GetWindowHeight()));
         SetPosition(pos);
 
-        randStartingForce = GenerateRandomStartingForce(1200.0f, 1500.0f);
+        // randStartingForce = GenerateRandomStartingForce(1200.0f, 1500.0f);
+        randStartingForce = GenerateRandomStartingForce(2500.0f, 2500.0f);
     }
     else {
         vertices = GenerateVertices(numVertices, 40);
         averageLength = CalculateAverageVerticesLength(vertices);
         SetPosition(position);
-        randStartingForce = GenerateRandomStartingForce(2200.0f, 2500.0f);
+        randStartingForce = GenerateRandomStartingForce(2500.0f, 2500.0f);
+        // randStartingForce = GenerateRandomStartingForce(2200.0f, 2500.0f);
     }
 
     mDrawComponent = new DrawComponent(this, vertices);
@@ -80,11 +82,17 @@ float Asteroid::CalculateAverageVerticesLength(std::vector<Vector2>& vertices)
 
 Vector2 Asteroid::GenerateRandomStartingForce(const float min, const float max)
 {
-    float randDirX = Random::GetFloat() < 0.5 ? 1.0f : -1.0f;
-    float randDirY = Random::GetFloat() < 0.5 ? 1.0f : -1.0f;
-    Vector2 randForce = Random::GetVector(Vector2(min, min), Vector2(max, max));
+    float speed = Random::GetFloatRange(min, max);
+    constexpr float TWO_PI = 2.0f * 3.1415926535f;
+    float randomAngle = Random::GetFloat() * TWO_PI;
 
-    randForce.x *= randDirX;
-    randForce.y *= randDirY;
+    Vector2 randForce;
+    randForce.x = speed * cos(randomAngle);
+    randForce.y = speed * sin(randomAngle);
+
+    if (randForce.x == 0.0f && randForce.y == 0.0f) {
+        randForce.x = max;
+    }
+
     return randForce;
 }

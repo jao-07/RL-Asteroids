@@ -107,7 +107,7 @@ private:
     float MAX_ASTEROID_VELOCITY = 40.0f;
     float MAX_RADIUS = 80.0f;
     float MAX_LASER_COOLDOWN = 0.5f;
-    int MAX_STEPS = 1000;
+    int MAX_STEPS = 500;
 
     bool mAllowSplitAsteroids;
     int mAsteroidsNumber;

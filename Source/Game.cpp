@@ -27,15 +27,15 @@ Game::Game(const bool visualize, int difficulty)
         ,mUpdatingActors(false)
         ,mShip(nullptr)
         ,mGameState(GameState::Playing)
-        ,mAsteroidDestroyedReward(1.0f)
+        ,mAsteroidDestroyedReward(2.0f)
         ,mDeathReward(-2.0f)
         ,mAllAsteroidsDestroyedReward(5.0f)
 {
         if (difficulty == 1) {
             mAsteroidsNumber = 4;
             mAllowSplitAsteroids = false;
-            mTimeReward = -0.004f;
-            mLasersMissedReward = -0.01f;
+            mTimeReward = -0.01f;
+            mLasersMissedReward = 0.0f;
         }
         else if (difficulty == 2) {
             mAsteroidsNumber = 5;
