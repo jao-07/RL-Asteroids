@@ -27,15 +27,16 @@ Game::Game(int windowWidth, int windowHeight, int difficulty)
         ,mWindowHeight(windowHeight)
         ,mGameState(GameState::Playing)
         ,mDifficulty(difficulty)
-        ,mDeathReward(-50.0f)
-        ,mAsteroidDestroyedReward(10.0f)
-        ,mAllAsteroidsDestroyedReward(50.0f)
+        ,mDeathReward(-2.0f)
+        ,mAsteroidDestroyedReward(2.0f)
+        ,mAllAsteroidsDestroyedReward(5.0f)
 {
     if (difficulty == 1) {
         mAsteroidsNumber = 2;
         mAllowSplitAsteroids = false;
-        mTimeReward = 0.1f;
-        mProximityAndDirectionReward = 0.01;
+        mTimeReward = -0.1f;
+        mLasersMissedReward = 0.0f;
+        mProximityAndDirectionReward = 0.1;
     }
     else if (difficulty == 2) {
         mAsteroidsNumber = 5;
@@ -391,7 +392,6 @@ float Game::CalculateReward(){
 
     if (CalculateDistanceAndDirectionToTheNearestAsteroid(300.0, 0.9)) {
         reward += mProximityAndDirectionReward;
-        SDL_Log("Proximo e na direção");
     }
 
     return reward;
