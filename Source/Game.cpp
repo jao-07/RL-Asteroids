@@ -27,27 +27,30 @@ Game::Game(const bool visualize, int difficulty)
         ,mUpdatingActors(false)
         ,mShip(nullptr)
         ,mGameState(GameState::Playing)
-        ,mAsteroidDestroyedReward(2.0f)
-        ,mDeathReward(-2.0f)
-        ,mAllAsteroidsDestroyedReward(5.0f)
+        ,mAsteroidDestroyedReward(1.0f)
+        ,mDeathReward(-5.0f)
+        ,mAllAsteroidsDestroyedReward(7.0f)
 {
         if (difficulty == 1) {
-            mAsteroidsNumber = 4;
+            mAsteroidsNumber = 8;
             mAllowSplitAsteroids = false;
-            mTimeReward = -0.01f;
-            mLasersMissedReward = 0.0f;
+            mTimeReward = -0.002f;
+            mLasersMissedReward = -0.02f;
+            mProximityAndDirectionReward = 0.01;
         }
         else if (difficulty == 2) {
             mAsteroidsNumber = 5;
             mAllowSplitAsteroids = true;
             mTimeReward = -0.01f;
             mLasersMissedReward = -0.1f;
+            mProximityAndDirectionReward = 0.01;
         }
         else {
             mAsteroidsNumber = 10;
             mAllowSplitAsteroids = true;
             mTimeReward = -0.05f;
             mLasersMissedReward = -0.5f;
+            mProximityAndDirectionReward = 0.01;
         }
 }
 
@@ -468,7 +471,26 @@ std::vector<float> Game::GetObservationSpace() const {
     return states;
 }
 
-float Game::CalculateReward() const {
+bool Game::CalculateDistanceAndDirectionToTheNearestAsteroid(float distanceLimit, float dotProductLimit) {
+    float dx = GetWrappedDelta(mShip->GetPosition().x, mAsteroids.front()->GetPosition().x, static_cast<float>(mWindowWidth));
+    float dy = GetWrappedDelta(mShip->GetPosition().y, mAsteroids.front()->GetPosition().y, static_cast<float>(mWindowHeight));
+    float distance = std::sqrt(dx*dx + dy*dy);
+    if (distance <= distanceLimit) {
+        Vector2 dirToAsteroid(dx, dy);
+        if (distance > 0.0f) {
+            dirToAsteroid.x /= distance;
+            dirToAsteroid.y /= distance;
+        }
+        float dotProduct = (mShip->GetForward().x * dirToAsteroid.x) + (mShip->GetForward().y * dirToAsteroid.y);
+
+        if (dotProduct > dotProductLimit) {
+            return true;
+        }
+    }
+    return false;
+}
+
+float Game::CalculateReward() {
     float reward = mTimeReward;
 
     if (mShip->GetIsDead())
@@ -482,6 +504,10 @@ float Game::CalculateReward() const {
 
     if (mAsteroids.empty() && !mShip->GetIsDead())
         reward += mAllAsteroidsDestroyedReward;
+
+    if (CalculateDistanceAndDirectionToTheNearestAsteroid(300.0, 0.93)) {
+        reward += mProximityAndDirectionReward;
+    }
 
     return reward;
 }

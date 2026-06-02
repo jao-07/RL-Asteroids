@@ -51,6 +51,7 @@ public:
     static float GetWrappedDelta(float p1, float p2, float limit);
     float GetWrappedDistanceSq(const Actor* a, const Actor* b) const;
     void orderAsteroids();
+    bool CalculateDistanceAndDirectionToTheNearestAsteroid(float distanceLimit, float dotProductLimit);
     std::vector<float> Reset();
 
     //void SetAsteroidDestroyed(bool destroyed);
@@ -119,7 +120,8 @@ private:
     float mAsteroidDestroyedReward;
     float mLasersMissedReward;
     float mAllAsteroidsDestroyedReward;
+    float mProximityAndDirectionReward;
 
     std::vector<float> GetObservationSpace() const;
-    float CalculateReward() const;
+    float CalculateReward();
 };
