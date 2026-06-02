@@ -94,6 +94,6 @@ void DrawComponent::Draw(SDL_Renderer *renderer)
     // TODO 3.5 (~4 linhas): Utilize a função DrawCircle para desenhar o círculo de colisão desse objeto.
     //  Antes de desenhar, altere a cor para verde com a função SDL_SetRenderDrawColor. Esse trecho
     //  de código será útil para debugar a detecção de colisão.
-    //SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    //DrawCircle(renderer, Vector2::Zero, mOwner->GetComponent<CircleColliderComponent>()->GetRadius());
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    DrawCircle(renderer, Vector2::Zero, mOwner->GetComponent<CircleColliderComponent>()->GetRadius());
 }

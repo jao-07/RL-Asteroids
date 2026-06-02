@@ -35,18 +35,21 @@ Game::Game(int windowWidth, int windowHeight, int difficulty)
         mAsteroidsNumber = 2;
         mAllowSplitAsteroids = false;
         mTimeReward = 0.1f;
+        mProximityAndDirectionReward = 0.01;
     }
     else if (difficulty == 2) {
         mAsteroidsNumber = 5;
         mAllowSplitAsteroids = true;
         mTimeReward = 0.0f;
         mLasersMissedReward = -0.1f;
+        mProximityAndDirectionReward = 0.01;
     }
     else {
         mAsteroidsNumber = 10;
         mAllowSplitAsteroids = true;
         mTimeReward = 0.0f;
         mLasersMissedReward = -0.5f;
+        mProximityAndDirectionReward = 0.01;
     }
 }
 
@@ -105,8 +108,9 @@ void Game::RunLoop()
         UpdateGame();
         if (mGameState == GameState::Playing)
             GenerateOutput();
-        if (CalculateReward() != 0)
-            SDL_Log("Reward: %f", CalculateReward());
+        float reward = CalculateReward();
+        if (reward != 0)
+            SDL_Log("Reward: %f", reward);
     }
 }
 
@@ -325,11 +329,52 @@ void Game::Shutdown()
     SDL_Quit();
 }
 
-bool Game::CalculateDistanceAndDirectionToTheNearestAsteroid() {
-
+float Game::GetWrappedDelta(const float p1, const float p2, const float limit) {
+    float dx = p2 - p1;
+    if (dx > limit / 2.0f) {
+        dx -= limit;
+    } else if (dx < -limit / 2.0f) {
+        dx += limit;
+    }
+    return dx;
 }
 
-float Game::CalculateReward() const {
+float Game::GetWrappedDistanceSq(const Actor* a, const Actor* b) const{
+    const float dx = GetWrappedDelta(a->GetPosition().x, b->GetPosition().x, static_cast<float>(mWindowWidth));
+    const float dy = GetWrappedDelta(a->GetPosition().y, b->GetPosition().y, static_cast<float>(mWindowHeight));
+    return dx*dx + dy*dy;
+}
+
+void Game::orderAsteroids () {
+    std::sort(mAsteroids.begin(), mAsteroids.end(), [this](const Asteroid* a, const Asteroid* b) {
+        const float distA = GetWrappedDistanceSq(mShip, a);
+        const float distB = GetWrappedDistanceSq(mShip, b);
+        return distA < distB;
+    });
+}
+
+bool Game::CalculateDistanceAndDirectionToTheNearestAsteroid(float distanceLimit, float dotProductLimit) {
+    orderAsteroids();
+    float dx = GetWrappedDelta(mShip->GetPosition().x, mAsteroids.front()->GetPosition().x, static_cast<float>(mWindowWidth));
+    float dy = GetWrappedDelta(mShip->GetPosition().y, mAsteroids.front()->GetPosition().y, static_cast<float>(mWindowHeight));
+    float distance = std::sqrt(dx*dx + dy*dy);
+    if (distance <= distanceLimit) {
+        Vector2 dirToAsteroid(dx, dy);
+        if (distance > 0.0f) {
+            dirToAsteroid.x /= distance;
+            dirToAsteroid.y /= distance;
+        }
+        float dotProduct = (mShip->GetForward().x * dirToAsteroid.x) + (mShip->GetForward().y * dirToAsteroid.y);
+        SDL_Log("%.2f", dotProduct);
+
+        if (dotProduct > dotProductLimit) {
+            return true;
+        }
+    }
+    return false;
+}
+
+float Game::CalculateReward(){
     float reward = mTimeReward;
 
     if (mShip->GetIsDead())
@@ -343,6 +388,11 @@ float Game::CalculateReward() const {
 
     if (mAsteroids.empty() && !mShip->GetIsDead())
         reward += mAllAsteroidsDestroyedReward;
+
+    if (CalculateDistanceAndDirectionToTheNearestAsteroid(300.0, 0.9)) {
+        reward += mProximityAndDirectionReward;
+        SDL_Log("Proximo e na direção");
+    }
 
     return reward;
 }
