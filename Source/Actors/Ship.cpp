@@ -14,15 +14,17 @@ Ship::Ship(Game* game,
            const float height,
            const float forwardForce,
            const float rotationForce,
-           const float frictionCoefficient)
+           const float frictionCoefficient,
+           const float totalLaserCooldown)
         : Actor(game)
-        , mLaserCooldown(0.f)
+        , mCurrentLaserCooldown(0.f)
         , mHeight(height)
         , mRigidBodyComponent(nullptr)
         , mDrawComponent(nullptr)
         , mForwardSpeed(forwardForce)
         , mRotationForce(rotationForce)
         , mFrictionCoefficient(frictionCoefficient)
+        ,mTotalLaserCooldown(totalLaserCooldown)
 {
     Vector2 vert1 = Vector2(-mHeight/2, mHeight/1.5);
     Vector2 vert2 = Vector2(mHeight, 0);
@@ -64,19 +66,19 @@ void Ship::OnProcessInput(Action action)
         angularSpeed += mRotationForce;
     }
 
-    if ((action == Action::Shoot) && (mLaserCooldown <= 0.0f)) {
+    if ((action == Action::Shoot) && (mCurrentLaserCooldown <= 0.0f)) {
         auto* l = new Laser(this->mGame, 5);
         l->SetPosition(this->mPosition + GetForward() * mHeight);
         l->SetRotation(this->mRotation);
         l->GetComponent<RigidBodyComponent>()->ApplyForce(GetForward() * 3000.f);
-        mLaserCooldown = 0.5;
+        resetCooldown();
     }
     mRigidBodyComponent->SetAngularSpeed(angularSpeed);
 }
 
 void Ship::OnUpdate(float deltaTime)
 {
-    mLaserCooldown = mLaserCooldown - deltaTime <= 0.0f ? 0.0f : mLaserCooldown - deltaTime;
+    mCurrentLaserCooldown = mCurrentLaserCooldown - deltaTime <= 0.0f ? 0.0f : mCurrentLaserCooldown - deltaTime;
 
     Vector2 velocity = mRigidBodyComponent->GetVelocity();
 

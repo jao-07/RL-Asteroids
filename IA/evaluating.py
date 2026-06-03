@@ -5,7 +5,7 @@ print("Carregando o ambiente com interface gráfica...")
 env = AsteroidsEnv(render_mode="human")
 
 print("Carregando o modelo treinado...")
-model = PPO.load("ppo_diff1__8ast_final")
+model = PPO.load("ppo_diff1_remake_8M")
 
 obs, _ = env.reset()
 done = False
@@ -15,7 +15,7 @@ print("Deixando a IA jogar...")
 
 for i in range(10):
     while True:
-        acao, _estados_internos = model.predict(obs, deterministic=False)
+        acao, _estados_internos = model.predict(obs, deterministic=True)
 
         obs, recompensa, done, trunc, _ = env.step(acao)
 

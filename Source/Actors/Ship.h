@@ -11,21 +11,25 @@ public:
     explicit Ship(Game* game, float height,
                               float forwardForce = 800.0f,
                               float rotationForce = 3.0f,
-                              float frictionCoefficient = 0.02f);
+                              float frictionCoefficient = 0.02f,
+                              float totalLaserCooldown = 1.0f);
 
     void OnProcessInput(Action action) override;
     void OnUpdate(float deltaTime) override;
     void Reset();
 
-    float GetLaserCoolDown() {return mLaserCooldown;}
+    float GetLaserCoolDown() {return mCurrentLaserCooldown;}
     bool GetIsDead() {return mIsDead;}
 
 private:
     float mForwardSpeed;
     float mRotationForce;
     float mFrictionCoefficient;
-    float mLaserCooldown;
+    float mCurrentLaserCooldown;
     float mHeight;
+    float mTotalLaserCooldown;
+
+    void resetCooldown() {mCurrentLaserCooldown = mTotalLaserCooldown;}
 
     bool mIsDead = false;
 

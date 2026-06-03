@@ -35,15 +35,15 @@ Game::Game(const bool visualize, int difficulty)
             mAsteroidsNumber = 8;
             mAllowSplitAsteroids = false;
             mTimeReward = -0.002f;
-            mLasersMissedReward = -0.02f;
-            mProximityAndDirectionReward = 0.01;
+            mLasersMissedReward = -0.15f;
+            mProximityAndDirectionReward = 0.03;
         }
         else if (difficulty == 2) {
-            mAsteroidsNumber = 5;
+            mAsteroidsNumber = 8;
             mAllowSplitAsteroids = true;
-            mTimeReward = -0.01f;
-            mLasersMissedReward = -0.1f;
-            mProximityAndDirectionReward = 0.01;
+            mTimeReward = -0.004f;
+            mLasersMissedReward = -0.01f;
+            mProximityAndDirectionReward = 0.05;
         }
         else {
             mAsteroidsNumber = 10;
@@ -505,7 +505,7 @@ float Game::CalculateReward() {
     if (mAsteroids.empty() && !mShip->GetIsDead())
         reward += mAllAsteroidsDestroyedReward;
 
-    if (CalculateDistanceAndDirectionToTheNearestAsteroid(300.0, 0.93)) {
+    if (CalculateDistanceAndDirectionToTheNearestAsteroid(300.0, 0.95)) {
         reward += mProximityAndDirectionReward;
     }
 

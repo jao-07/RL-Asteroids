@@ -34,7 +34,8 @@ int main(int argc, char** argv)
         while (game.IsRunning())
         {
             // int acaoSimulada = Random::GetIntRange(0,5);
-            int acaoSimulada = 3;
+            // # Ações Discretas(0: Dir, 1: Esq, 2: Tiro, 3: Frente, 4: Nada)
+            int acaoSimulada = 2;
             auto [obs, reward, terminated, truncated] = game.Step(acaoSimulada);
             totalReward += reward;
 
