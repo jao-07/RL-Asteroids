@@ -92,10 +92,12 @@ void Ship::OnUpdate(float deltaTime)
     }
 
     std::vector<Asteroid*> asteroids = mGame->GetAsteroids();
-    for (int i=0; i<asteroids.size(); i++) {
-        auto *ast = asteroids[i]->GetComponent<CircleColliderComponent>();
-        if (this->mCircleColliderComponent->Intersect(*ast)) {
-            mIsDead = true;
+    for (auto & asteroid : asteroids) {
+        if (asteroid != nullptr) {
+            auto *ast = asteroid->GetComponent<CircleColliderComponent>();
+            if (this->mCircleColliderComponent->Intersect(*ast)) {
+                mIsDead = true;
+            }
         }
     }
 }

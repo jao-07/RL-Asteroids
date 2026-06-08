@@ -50,7 +50,7 @@ public:
     std::vector<class Asteroid*>& GetAsteroids() { return mAsteroids; }
     static float GetWrappedDelta(float p1, float p2, float limit);
     float GetWrappedDistanceSq(const Actor* a, const Actor* b) const;
-    void orderAsteroids();
+    void orderAsteroids(std::vector<class Asteroid*>& asteroids);
     bool CalculateDistanceAndDirectionToTheNearestAsteroid(float distanceLimit, float dotProductLimit);
     std::vector<float> Reset();
 
@@ -61,6 +61,8 @@ public:
 
     bool mVisualize;
     int mStepsDone = 0;
+
+    void IncreaseAsteroidsNumber() { mCurrentAsteroidsNumber++; }
 
 private:
     void ProcessInput();
@@ -111,7 +113,8 @@ private:
     int MAX_STEPS = 2000;
 
     bool mAllowSplitAsteroids;
-    int mAsteroidsNumber;
+    int mInitialAsteroidsNumber;
+    int mCurrentAsteroidsNumber = 0;
     bool mAsteroidDestroyed = false;
     bool mLaserMissedInTheStep = false;
 
