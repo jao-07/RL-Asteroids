@@ -35,7 +35,7 @@ Game::Game(const bool visualize, int difficulty)
             mInitialAsteroidsNumber = 10;
             mAllowSplitAsteroids = false;
             mTimeReward = -0.002f;
-            mLasersMissedReward = -0.15f;
+            mLasersMissedReward = -0.02f;
             mProximityAndDirectionReward = 0.03;
         }
         else if (difficulty == 2) {
@@ -547,8 +547,11 @@ std::tuple<std::vector<float>, float, bool, bool> Game::Step(int action) {
     bool terminated = mShip->GetIsDead() || mCurrentAsteroidsNumber == 0;
     bool truncated = mStepsDone >= MAX_STEPS;
     std::vector<float> obs = GetObservationSpace();
+    SDL_Log("Observation:");
+    for(auto ob: obs) {
+        SDL_Log("%f", ob);
+    }
     float reward = CalculateReward();
-
     std::tuple tuple = std::make_tuple(obs, reward, terminated, truncated);
     return tuple;
 }

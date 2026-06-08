@@ -70,7 +70,7 @@ void Ship::OnProcessInput(Action action)
         auto* l = new Laser(this->mGame, 5);
         l->SetPosition(this->mPosition + GetForward() * mHeight);
         l->SetRotation(this->mRotation);
-        l->GetComponent<RigidBodyComponent>()->ApplyForce(GetForward() * 3000.f);
+        l->GetComponent<RigidBodyComponent>()->ApplyForce(GetForward() * 12000.f);
         resetCooldown();
     }
     mRigidBodyComponent->SetAngularSpeed(angularSpeed);
