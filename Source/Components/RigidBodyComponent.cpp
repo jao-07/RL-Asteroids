@@ -31,13 +31,6 @@ void RigidBodyComponent::ApplyForce(const Vector2 &force) {
 void RigidBodyComponent::Update(float deltaTime)
 {
     Vector2 position = mOwner->GetPosition();
-
-    // --------------
-    // TODO - PARTE 2
-    // --------------
-
-    // TODO 2.1 (2 linhas): Atualize a velocidade (mVelocity) e a posição (position) do objeto utilizando
-    //  o método de Euler semi-implícito.
     mVelocity += mAcceleration * deltaTime;
     position += mVelocity * deltaTime;
 
@@ -45,23 +38,14 @@ void RigidBodyComponent::Update(float deltaTime)
 
     mOwner->SetPosition(position);
 
-    // TODO 2.2 (~3 linhas): Utilize a função Math::NearZero para verificar se o comprimento do vetor
-    //  velocidade (mVelocity) está próximo de zero. Se estiver, use a função mVelocity.Set() para
-    //  forçar velocidade zero. Isso evita movimentos muito pequenos.
     if (Math::NearZero(mVelocity.x, 5) && Math::NearZero(mVelocity.y, 5)) {
         mVelocity.Set(0, 0);
     }
 
-    // TODO 2.3 (1 linhas): Utilize a função mAcceleration.Set() para reinicializar a aceleração para zero.
     mAcceleration.Set(0, 0);
 
-
     float rot = mOwner->GetRotation();
-
-    // TODO 2.4 (1 linha): Some à rotação atual do objeto (rot) a velocidade angular (mAngularSpeed)
-    //  multiplicada pelo deltaTime.
     rot += mAngularSpeed * deltaTime;
-
     mOwner->SetRotation(rot);
 }
 

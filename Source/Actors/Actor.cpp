@@ -40,7 +40,6 @@ void Actor::Update(float deltaTime)
         {
             comp->Update(deltaTime);
         }
-
         OnUpdate(deltaTime);
     }
 }

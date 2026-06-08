@@ -23,6 +23,7 @@ Game::Game(int windowWidth, int windowHeight, int difficulty)
         ,mIsRunning(true)
         ,mUpdatingActors(false)
         ,mShip(nullptr)
+        ,mAsteroids(30, nullptr)
         ,mWindowWidth(windowWidth)
         ,mWindowHeight(windowHeight)
         ,mGameState(GameState::Playing)
@@ -32,21 +33,21 @@ Game::Game(int windowWidth, int windowHeight, int difficulty)
         ,mAllAsteroidsDestroyedReward(5.0f)
 {
     if (difficulty == 1) {
-        mAsteroidsNumber = 2;
+        mInitialAsteroidsNumber = 2;
         mAllowSplitAsteroids = false;
         mTimeReward = -0.1f;
         mLasersMissedReward = 0.0f;
         mProximityAndDirectionReward = 0.1;
     }
     else if (difficulty == 2) {
-        mAsteroidsNumber = 5;
+        mInitialAsteroidsNumber = 5;
         mAllowSplitAsteroids = true;
         mTimeReward = 0.0f;
         mLasersMissedReward = -0.1f;
         mProximityAndDirectionReward = 0.01;
     }
     else {
-        mAsteroidsNumber = 10;
+        mInitialAsteroidsNumber = 10;
         mAllowSplitAsteroids = true;
         mTimeReward = 0.0f;
         mLasersMissedReward = -0.5f;
@@ -87,7 +88,9 @@ bool Game::Initialize()
 }
 
 void Game::CreateAsteroids() {
-    for (int i=0; i < mAsteroidsNumber; i++) {
+    mAsteroids.clear();
+    mAsteroids.resize(30, nullptr);
+    for (int i=0; i < mInitialAsteroidsNumber; i++) {
         auto* ast = new Asteroid(this, AsteroidSize::Large);
     }
 }
@@ -107,11 +110,12 @@ void Game::RunLoop()
     {
         ProcessInput();
         UpdateGame();
-        if (mGameState == GameState::Playing)
+        if (mGameState == GameState::Playing) {
             GenerateOutput();
-        float reward = CalculateReward();
-        if (reward != 0)
-            SDL_Log("Reward: %f", reward);
+        }
+        // float reward = CalculateReward();
+        // if (reward != 0)
+        //     SDL_Log("Reward: %f", reward);
     }
 }
 
@@ -155,7 +159,7 @@ void Game::UpdateGame()
 
     UpdateActors(deltaTime);
 
-    if (mGameState == GameState::Playing && (mAsteroids.empty() || mShip->GetIsDead())) {
+    if (mGameState == GameState::Playing && (mCurrentAsteroidsNumber == 0 || mShip->GetIsDead())) {
         mGameState = GameState::Waiting;
         mPauseTime = SDL_GetTicks();
     }
@@ -194,7 +198,6 @@ void Game::UpdateActors(float deltaTime)
 
     for (auto actor : deadActors)
     {
-        //SDL_Log("Deleting actor: %p (%s)", actor, typeid(*actor).name());
         delete actor;
     }
 }
@@ -211,8 +214,19 @@ void Game::CreateParticles(Asteroid *ast, float min, float max) {
 
 void Game::AddAsteroid(Asteroid* ast)
 {
-    mAsteroids.emplace_back(ast);
-    // SDL_Log("Asteroid Added - mAsteroids size: %d", mAsteroids.size());
+    bool slotEncontrado = false;
+    for (auto & mAsteroid : mAsteroids) {
+        if (mAsteroid == nullptr) {
+            mAsteroid = ast;
+            slotEncontrado = true;
+            mCurrentAsteroidsNumber++;
+            break;
+        }
+    }
+    if (!slotEncontrado) {
+        delete ast;
+        SDL_Log("[ERRO] Limite de 30 asteroides atingido no vetor estático!");
+    }
 }
 
 void Game::RemoveAsteroid(Asteroid* ast)
@@ -225,8 +239,7 @@ void Game::RemoveAsteroid(Asteroid* ast)
         ast->SetState(ActorState::Destroy);
         CreateParticles(ast, 600, 1000);
 
-        std::iter_swap(iter, mAsteroids.end() - 1);
-        mAsteroids.pop_back();
+        *iter = nullptr;
 
         if (isLarge && mAllowSplitAsteroids) {
             for (int i=0; i<3; i++) {
@@ -235,9 +248,17 @@ void Game::RemoveAsteroid(Asteroid* ast)
             }
         }
         mAsteroidDestroyed = true;
+        mCurrentAsteroidsNumber--;
     }
     else
         SDL_Log("Attempting to remove asteroid not in list");
+
+    for (int i=0; i<mAsteroids.size(); i++) {
+        if (mAsteroids[i] == nullptr)
+            SDL_Log("%d: Null", i);
+        else
+            SDL_Log("%d: Alive", i);
+    }
 }
 
 void Game::AddActor(Actor* actor)
@@ -366,7 +387,6 @@ bool Game::CalculateDistanceAndDirectionToTheNearestAsteroid(float distanceLimit
             dirToAsteroid.y /= distance;
         }
         float dotProduct = (mShip->GetForward().x * dirToAsteroid.x) + (mShip->GetForward().y * dirToAsteroid.y);
-        SDL_Log("%.2f", dotProduct);
 
         if (dotProduct > dotProductLimit) {
             return true;

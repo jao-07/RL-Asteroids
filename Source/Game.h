@@ -90,6 +90,7 @@ private:
     // Game-specific
     class Ship* mShip;
     std::vector<class Asteroid*> mAsteroids;
+    int mCurrentAsteroidsNumber = 0;
     int mDifficulty;
 
     //Track the pauses between the asteroids waves
@@ -97,7 +98,7 @@ private:
     Uint32 mPauseTime = 0;
 
     bool mAllowSplitAsteroids;
-    int mAsteroidsNumber;
+    int mInitialAsteroidsNumber;
     bool mAsteroidDestroyed = false;
     bool mLaserMissedInTheStep = false;
 

@@ -14,8 +14,9 @@ const int SCREEN_HEIGHT = 768;
 
 int main(int argc, char** argv)
 {
-    Game game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, 3);
+    Game game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
     bool success = game.Initialize();
+
     if (success)
     {
         game.RunLoop();

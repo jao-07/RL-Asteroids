@@ -37,11 +37,12 @@ void Laser::OnUpdate(float deltaTime)
 
     const std::vector<Asteroid*> Asteroids = mGame->GetAsteroids();
     for (auto Asteroid : Asteroids) {
-        if (auto *ast = Asteroid->GetComponent<CircleColliderComponent>(); this->mCircleColliderComponent->Intersect(*ast)) {
-            //SDL_Log("Asteroid (%f, %f) hit", Asteroids[i]->GetPosition().x, Asteroids[i]->GetPosition().y);
-            SetState(ActorState::Destroy);
-            Asteroid->SetState(ActorState::Destroy);
-            break;
+        if (Asteroid != nullptr) {
+            if (auto *ast = Asteroid->GetComponent<CircleColliderComponent>(); this->mCircleColliderComponent->Intersect(*ast)) {
+                SetState(ActorState::Destroy);
+                Asteroid->SetState(ActorState::Destroy);
+                break;
+            }
         }
     }
 }
