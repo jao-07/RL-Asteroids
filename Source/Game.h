@@ -48,10 +48,6 @@ public:
     void AddAsteroid(class Asteroid* ast);
     void RemoveAsteroid(class Asteroid* ast);
     std::vector<class Asteroid*>& GetAsteroids() { return mAsteroids; }
-    static float GetWrappedDelta(float p1, float p2, float limit);
-    float GetWrappedDistanceSq(const Actor* a, const Actor* b) const;
-    void orderAsteroids(std::vector<class Asteroid*>& asteroids);
-    bool CalculateDistanceAndDirectionToTheNearestAsteroid(float distanceLimit, float dotProductLimit);
     std::vector<float> Reset();
 
     //void SetAsteroidDestroyed(bool destroyed);
@@ -105,6 +101,11 @@ private:
     Action mSelectedAction = Action::Nothing;
 
     void ApplyAction(Action action);
+    static float GetWrappedDelta(float p1, float p2, float limit);
+    float GetWrappedDistanceSq(const Actor* a, const Actor* b) const;
+    void orderAsteroids(std::vector<class Asteroid*>& asteroids);
+    bool CalculateDistanceAndDirectionToTheNearestAsteroid(float distanceLimit, float dotProductLimit);
+    bool IsAimingAtAnyAsteroid(float distanceLimit, float dotProductLimit);
 
     float MAX_SHIP_VELOCITY = 200.0f;
     float MAX_ASTEROID_VELOCITY = 40.0f;
