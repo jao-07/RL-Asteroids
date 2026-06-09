@@ -14,15 +14,17 @@ Ship::Ship(Game* game,
            const float height,
            const float forwardForce,
            const float rotationForce,
-           const float frictionCoefficient)
+           const float frictionCoefficient,
+           const float totalLaserCooldown)
         : Actor(game)
-        , mLaserCooldown(0.f)
+        , mCurrentLaserCooldown(0.f)
         , mHeight(height)
         , mRigidBodyComponent(nullptr)
         , mDrawComponent(nullptr)
         , mForwardSpeed(forwardForce)
         , mRotationForce(rotationForce)
         , mFrictionCoefficient(frictionCoefficient)
+        ,mTotalLaserCooldown(totalLaserCooldown)
 {
     Vector2 vert1 = Vector2(-mHeight/2, mHeight/1.5);
     Vector2 vert2 = Vector2(mHeight, 0);
@@ -44,6 +46,7 @@ void Ship::Reset() {
     mRigidBodyComponent->SetVelocity(Vector2(0, 0));
     mRigidBodyComponent->SetAngularSpeed(0);
     SetPosition(Vector2(mGame->GetWindowWidth() / 2.0f, mGame->GetWindowHeight() / 2.0f));
+    mIsDead = false;
 }
 
 void Ship::OnProcessInput(const uint8_t* state)
@@ -63,12 +66,12 @@ void Ship::OnProcessInput(const uint8_t* state)
         angularSpeed += mRotationForce;
     }
 
-    if ((state[SDL_SCANCODE_SPACE]) && (mLaserCooldown <= 0.0f)) {
+    if ((state[SDL_SCANCODE_SPACE]) && (mCurrentLaserCooldown <= 0.0f)) {
         Laser* l = new Laser(this->mGame, 5);
         l->SetPosition(this->mPosition + GetForward() * mHeight);
         l->SetRotation(this->mRotation);
-        l->GetComponent<RigidBodyComponent>()->ApplyForce(GetForward() * 3000.f);
-        mLaserCooldown = 0.5;
+        l->GetComponent<RigidBodyComponent>()->ApplyForce(GetForward() * 12000.f);
+        resetCooldown();
     }
 
     mRigidBodyComponent->SetAngularSpeed(angularSpeed);
@@ -77,7 +80,7 @@ void Ship::OnProcessInput(const uint8_t* state)
 void Ship::OnUpdate(float deltaTime)
 {
     // mLaserCooldown -= deltaTime;
-    mLaserCooldown = mLaserCooldown - deltaTime <= 0.0f ? 0.0f : mLaserCooldown - deltaTime;
+    mCurrentLaserCooldown = mCurrentLaserCooldown - deltaTime <= 0.0f ? 0.0f : mCurrentLaserCooldown - deltaTime;
 
     Vector2 velocity = mRigidBodyComponent->GetVelocity();
 

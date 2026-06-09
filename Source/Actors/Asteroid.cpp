@@ -45,6 +45,7 @@ Asteroid::Asteroid(Game* game, AsteroidSize size, Vector2 position, const int nu
     mCircleColliderComponent = new CircleColliderComponent(this, averageLength);
     mRigidBodyComponent->ApplyForce(randStartingForce);
     mGame->AddAsteroid(this);
+    mGame->IncreaseAsteroidsNumber();
 }
 
 Asteroid::~Asteroid()

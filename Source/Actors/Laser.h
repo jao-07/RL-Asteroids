@@ -8,7 +8,7 @@
 class Laser : public Actor
 {
 public:
-    Laser(class Game* game, float length = 10.0f, float deathTimer = 1.0f);
+    Laser(class Game* game, float length = 10.0f, float deathTimer = 0.25f);
 
     void OnUpdate(float deltaTime) override;
 

@@ -23,7 +23,6 @@ Game::Game(int windowWidth, int windowHeight, int difficulty)
         ,mIsRunning(true)
         ,mUpdatingActors(false)
         ,mShip(nullptr)
-        ,mAsteroids(30, nullptr)
         ,mWindowWidth(windowWidth)
         ,mWindowHeight(windowHeight)
         ,mGameState(GameState::Playing)
@@ -33,11 +32,11 @@ Game::Game(int windowWidth, int windowHeight, int difficulty)
         ,mAllAsteroidsDestroyedReward(5.0f)
 {
     if (difficulty == 1) {
-        mInitialAsteroidsNumber = 2;
+        mInitialAsteroidsNumber = 10;
         mAllowSplitAsteroids = false;
-        mTimeReward = -0.1f;
-        mLasersMissedReward = 0.0f;
-        mProximityAndDirectionReward = 0.1;
+        mTimeReward = -0.002f;
+        mLasersMissedReward = -0.02f;
+        mProximityAndDirectionReward = 0.03;
     }
     else if (difficulty == 2) {
         mInitialAsteroidsNumber = 5;
@@ -88,8 +87,6 @@ bool Game::Initialize()
 }
 
 void Game::CreateAsteroids() {
-    mAsteroids.clear();
-    mAsteroids.resize(30, nullptr);
     for (int i=0; i < mInitialAsteroidsNumber; i++) {
         auto* ast = new Asteroid(this, AsteroidSize::Large);
     }
@@ -214,19 +211,7 @@ void Game::CreateParticles(Asteroid *ast, float min, float max) {
 
 void Game::AddAsteroid(Asteroid* ast)
 {
-    bool slotEncontrado = false;
-    for (auto & mAsteroid : mAsteroids) {
-        if (mAsteroid == nullptr) {
-            mAsteroid = ast;
-            slotEncontrado = true;
-            mCurrentAsteroidsNumber++;
-            break;
-        }
-    }
-    if (!slotEncontrado) {
-        delete ast;
-        SDL_Log("[ERRO] Limite de 30 asteroides atingido no vetor estático!");
-    }
+    mAsteroids.emplace_back(ast);
 }
 
 void Game::RemoveAsteroid(Asteroid* ast)
@@ -362,12 +347,16 @@ float Game::GetWrappedDelta(const float p1, const float p2, const float limit) {
 }
 
 float Game::GetWrappedDistanceSq(const Actor* a, const Actor* b) const{
-    const float dx = GetWrappedDelta(a->GetPosition().x, b->GetPosition().x, static_cast<float>(mWindowWidth));
-    const float dy = GetWrappedDelta(a->GetPosition().y, b->GetPosition().y, static_cast<float>(mWindowHeight));
-    return dx*dx + dy*dy;
+    if (a != nullptr && b != nullptr) {
+        float dx = GetWrappedDelta(a->GetPosition().x, b->GetPosition().x, static_cast<float>(mWindowWidth));
+        float dy = GetWrappedDelta(a->GetPosition().y, b->GetPosition().y, static_cast<float>(mWindowHeight));
+        return dx*dx + dy*dy;
+    }
+
+    return 999999999.0f;
 }
 
-void Game::orderAsteroids () {
+void Game::orderAsteroids (std::vector<class Asteroid*>& asteroids) {
     std::sort(mAsteroids.begin(), mAsteroids.end(), [this](const Asteroid* a, const Asteroid* b) {
         const float distA = GetWrappedDistanceSq(mShip, a);
         const float distB = GetWrappedDistanceSq(mShip, b);
@@ -376,7 +365,8 @@ void Game::orderAsteroids () {
 }
 
 bool Game::CalculateDistanceAndDirectionToTheNearestAsteroid(float distanceLimit, float dotProductLimit) {
-    orderAsteroids();
+    std::vector<class Asteroid*> asteroids = mAsteroids;
+    orderAsteroids(asteroids);
     float dx = GetWrappedDelta(mShip->GetPosition().x, mAsteroids.front()->GetPosition().x, static_cast<float>(mWindowWidth));
     float dy = GetWrappedDelta(mShip->GetPosition().y, mAsteroids.front()->GetPosition().y, static_cast<float>(mWindowHeight));
     float distance = std::sqrt(dx*dx + dy*dy);
