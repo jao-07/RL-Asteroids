@@ -3,6 +3,7 @@ import os
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.vec_env import SubprocVecEnv
+from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.monitor import Monitor
 from asteroids_env import AsteroidsEnv
 
@@ -16,14 +17,15 @@ if __name__ == "__main__":
 
     num_envs = 4
     env_diff1 = SubprocVecEnv([make_env(i) for i in range(num_envs)])
+    # env_diff1 = DummyVecEnv([make_env(i) for i in range(num_envs)])
 
-    OS_CHECKPOINT_DIR = "./checkpoints_ppo_diff1_remake_8M"
+    OS_CHECKPOINT_DIR = "./checkpoints_ppo_10ast"
     os.makedirs(OS_CHECKPOINT_DIR, exist_ok=True)
 
     checkpoint_callback = CheckpointCallback(
         save_freq=max(10000, 200000 // num_envs),
         save_path=OS_CHECKPOINT_DIR,
-        name_prefix="ppo_diff1_remake_8M",
+        name_prefix="ppo_10ast_7M",
         save_replay_buffer=False,
         save_vecnormalize=False,
         verbose=1
@@ -42,14 +44,14 @@ if __name__ == "__main__":
     #     verbose=1,
     #     tensorboard_log="./ppo_diff1/"
     # )
-    modelo_ppo = PPO.load("ppo_diff1_remake_6M", env=env_diff1)
+    modelo_ppo = PPO.load("ppo_10ast_5M", env=env_diff1)
 
     modelo_ppo.learn(
-        total_timesteps=2000000,
-        tb_log_name="ppo_diff1_remake_8M",
+        total_timesteps=3000000,
+        tb_log_name="ppo_10ast_7M",
         callback=checkpoint_callback,
         reset_num_timesteps=False,
         progress_bar=True
     )
 
-    modelo_ppo.save("ppo_diff1_remake_8M")
+    modelo_ppo.save("ppo_10ast_7M")
