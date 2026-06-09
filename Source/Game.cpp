@@ -110,6 +110,7 @@ void Game::RunLoop()
         if (mGameState == GameState::Playing) {
             GenerateOutput();
         }
+        CalculateReward();
         // float reward = CalculateReward();
         // if (reward != 0)
         //     SDL_Log("Reward: %f", reward);
@@ -365,10 +366,29 @@ void Game::orderAsteroids (std::vector<class Asteroid*>& asteroids) {
 }
 
 bool Game::CalculateDistanceAndDirectionToTheNearestAsteroid(float distanceLimit, float dotProductLimit) {
-    std::vector<class Asteroid*> asteroids = mAsteroids;
-    orderAsteroids(asteroids);
-    float dx = GetWrappedDelta(mShip->GetPosition().x, mAsteroids.front()->GetPosition().x, static_cast<float>(mWindowWidth));
-    float dy = GetWrappedDelta(mShip->GetPosition().y, mAsteroids.front()->GetPosition().y, static_cast<float>(mWindowHeight));
+    if (mShip == nullptr) {
+        return false;
+    }
+
+    Asteroid* nearestAsteroid = nullptr;
+    float minDistanceSq = 999999999.0f;
+
+    for (Asteroid* ast : mAsteroids) {
+        if (ast != nullptr) {
+            float distSq = GetWrappedDistanceSq(mShip, ast);
+            if (distSq < minDistanceSq) {
+                minDistanceSq = distSq;
+                nearestAsteroid = ast;
+            }
+        }
+    }
+
+    if (nearestAsteroid == nullptr) {
+        return false;
+    }
+
+    float dx = GetWrappedDelta(mShip->GetPosition().x, nearestAsteroid->GetPosition().x, static_cast<float>(mWindowWidth));
+    float dy = GetWrappedDelta(mShip->GetPosition().y, nearestAsteroid->GetPosition().y, static_cast<float>(mWindowHeight));
     float distance = std::sqrt(dx*dx + dy*dy);
     if (distance <= distanceLimit) {
         Vector2 dirToAsteroid(dx, dy);
@@ -380,6 +400,28 @@ bool Game::CalculateDistanceAndDirectionToTheNearestAsteroid(float distanceLimit
 
         if (dotProduct > dotProductLimit) {
             return true;
+        }
+    }
+    return false;
+}
+
+bool Game::IsAimingAtAnyAsteroid(float distanceLimit, float dotProductLimit) {
+    if (mShip == nullptr) return false;
+    for (Asteroid* ast : mAsteroids) {
+        if (ast != nullptr) {
+            float dx = GetWrappedDelta(mShip->GetPosition().x, ast->GetPosition().x, static_cast<float>(mWindowWidth));
+            float dy = GetWrappedDelta(mShip->GetPosition().y, ast->GetPosition().y, static_cast<float>(mWindowHeight));
+
+            float distance = std::sqrt(dx * dx + dy * dy);
+
+            if (distance > 0.0f && distance <= distanceLimit) {
+                Vector2 dirToAsteroid(dx / distance, dy / distance);
+                float dotProduct = (mShip->GetForward().x * dirToAsteroid.x) + (mShip->GetForward().y * dirToAsteroid.y);
+
+                if (dotProduct > dotProductLimit) {
+                    return true;
+                }
+            }
         }
     }
     return false;
@@ -400,8 +442,9 @@ float Game::CalculateReward(){
     if (mAsteroids.empty() && !mShip->GetIsDead())
         reward += mAllAsteroidsDestroyedReward;
 
-    if (CalculateDistanceAndDirectionToTheNearestAsteroid(300.0, 0.9)) {
+    if (IsAimingAtAnyAsteroid(500.0, 0.93)) {
         reward += mProximityAndDirectionReward;
+        SDL_Log("Mirando asteroide");
     }
 
     return reward;

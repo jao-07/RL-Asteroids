@@ -64,6 +64,7 @@ private:
     float GetWrappedDistanceSq(const Actor* a, const Actor* b) const;
     void orderAsteroids(std::vector<class Asteroid*>& asteroids);
     bool CalculateDistanceAndDirectionToTheNearestAsteroid(float distanceLimit, float dotProductLimit);
+    bool IsAimingAtAnyAsteroid(float distanceLimit, float dotProductLimit);
     float CalculateReward();
 
     // All the actors in the game
