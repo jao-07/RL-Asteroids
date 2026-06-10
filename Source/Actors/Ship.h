@@ -32,6 +32,7 @@ private:
     void resetCooldown() {mCurrentLaserCooldown = mTotalLaserCooldown;}
 
     bool mIsDead = false;
+    int shotsFired = 0;
 
     class DrawComponent* mDrawComponent;
     class RigidBodyComponent* mRigidBodyComponent;

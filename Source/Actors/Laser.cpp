@@ -41,6 +41,7 @@ void Laser::OnUpdate(float deltaTime)
                 //SDL_Log("Asteroid (%f, %f) hit", Asteroid->GetPosition().x, Asteroid->GetPosition().y);
                 SetState(ActorState::Destroy);
                 Asteroid->SetState(ActorState::Destroy);
+                mGame->IncreaseLasersHit();
                 break;
             }
         }

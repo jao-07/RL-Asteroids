@@ -51,9 +51,11 @@ public:
     std::vector<float> Reset();
 
     //void SetAsteroidDestroyed(bool destroyed);
-    std::tuple<std::vector<float>, float, bool, bool> Step(int action);
+    std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int, bool>> Step(int action);
 
     void SetLasersMissed(bool state) { mLaserMissedInTheStep = state; }
+    void IncreaseLasersHit() {mLasersHit++;}
+    void IncreaseLasersFired() {mLasersFired++;}
 
     bool mVisualize;
     int mStepsDone = 0;
@@ -105,7 +107,7 @@ private:
     float GetWrappedDistanceSq(const Actor* a, const Actor* b) const;
     void orderAsteroids(std::vector<class Asteroid*>& asteroids);
     bool CalculateDistanceAndDirectionToTheNearestAsteroid(float distanceLimit, float dotProductLimit);
-    bool IsAimingAtAnyAsteroid(float distanceLimit, float dotProductLimit);
+    float IsAimingAtAnyAsteroid(float distanceLimit);
 
     float MAX_SHIP_VELOCITY = 200.0f;
     float MAX_ASTEROID_VELOCITY = 40.0f;
@@ -118,6 +120,8 @@ private:
     int mCurrentAsteroidsNumber = 0;
     bool mAsteroidDestroyed = false;
     bool mLaserMissedInTheStep = false;
+    int mLasersHit = 0;
+    int mLasersFired = 0;
 
     float mTimeReward;
     float mDeathReward;

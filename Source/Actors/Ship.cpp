@@ -72,6 +72,7 @@ void Ship::OnProcessInput(Action action)
         l->SetRotation(this->mRotation);
         l->GetComponent<RigidBodyComponent>()->ApplyForce(GetForward() * 12000.f);
         resetCooldown();
+        mGame->IncreaseLasersFired();
     }
     mRigidBodyComponent->SetAngularSpeed(angularSpeed);
 }

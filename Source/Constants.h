@@ -24,3 +24,11 @@ enum class ActorState
     Paused,
     Destroy
 };
+
+struct EpisodeStats {
+    bool valid = false;
+    int shotsFired = 0;
+    int shotsHit = 0;
+    int survivalTime = 0;
+    bool victory = false;
+};
