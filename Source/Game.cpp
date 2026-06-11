@@ -27,16 +27,16 @@ Game::Game(const bool visualize, int difficulty)
         ,mUpdatingActors(false)
         ,mShip(nullptr)
         ,mGameState(GameState::Playing)
-        ,mAsteroidDestroyedReward(2.0f)
+        ,mAsteroidDestroyedReward(1.0f)
         ,mDeathReward(-10.0f)
         ,mAllAsteroidsDestroyedReward(10.0f)
 {
         if (difficulty == 1) {
             mInitialAsteroidsNumber = 10;
             mAllowSplitAsteroids = false;
-            mTimeReward = -0.002f;
-            mLasersMissedReward = -0.1f;
-            mProximityAndDirectionReward = 0.0005f;
+            mTimeReward = 0.0f;
+            mLasersMissedReward = -0.05f;
+            mProximityAndDirectionReward = 0.0f;
         }
         else if (difficulty == 2) {
             mInitialAsteroidsNumber = 1;
@@ -448,32 +448,12 @@ std::vector<float> Game::GetObservationSpace() const {
     std::vector<float> states;
     states.reserve(85);
     //Dados da nave
-    // states.emplace_back(mShip->GetPosition().x / static_cast<float>(mWindowWidth));
-    // states.emplace_back(mShip->GetPosition().y / static_cast<float>(mWindowHeight));
     states.emplace_back(mShip->GetForward().x);
     states.emplace_back(mShip->GetForward().y);
     states.emplace_back(mShip->GetComponent<RigidBodyComponent>()->GetVelocity().x / MAX_SHIP_VELOCITY);
     states.emplace_back(mShip->GetComponent<RigidBodyComponent>()->GetVelocity().y / MAX_SHIP_VELOCITY);
     states.emplace_back(mShip->GetLaserCoolDown() / MAX_LASER_COOLDOWN);
 
-    // //Dados dos 15 asteroids mais próximos
-    // auto size = mAsteroids.size();
-    // for (int i=0; i<15; i++) {
-    //     if (i < size) {
-    //         states.emplace_back(GetWrappedDelta(mShip->GetPosition().x, mAsteroids[i]->GetPosition().x, static_cast<float>(mWindowWidth)) / static_cast<float>(mWindowWidth));
-    //         states.emplace_back(GetWrappedDelta(mShip->GetPosition().y, mAsteroids[i]->GetPosition().y, static_cast<float>(mWindowHeight)) / static_cast<float>(mWindowHeight));
-    //         states.emplace_back(mAsteroids[i]->GetComponent<CircleColliderComponent>()->GetRadius() / MAX_RADIUS);
-    //         states.emplace_back(mAsteroids[i]->GetComponent<RigidBodyComponent>()->GetVelocity().x / MAX_ASTEROID_VELOCITY);
-    //         states.emplace_back(mAsteroids[i]->GetComponent<RigidBodyComponent>()->GetVelocity().y / MAX_ASTEROID_VELOCITY);
-    //     }
-    //     else {
-    //         states.emplace_back(5.0f);
-    //         states.emplace_back(5.0f);
-    //         states.emplace_back(0.0f);
-    //         states.emplace_back(0.0f);
-    //         states.emplace_back(0.0f);
-    //     }
-    // }
     for (int i = 0; i < 10; i++) {
         if (i < mAsteroids.size() && mAsteroids[i] != nullptr) {
             float dx = GetWrappedDelta(mShip->GetPosition().x, mAsteroids[i]->GetPosition().x, static_cast<float>(mWindowWidth)) / (static_cast<float>(mWindowWidth) / 2.0f);

@@ -13,7 +13,7 @@ total_reward = 0.0
 
 print("Deixando a IA jogar...")
 
-for i in range(10):
+for i in range(20):
     while True:
         acao, _estados_internos = model.predict(obs, deterministic=True)
 
