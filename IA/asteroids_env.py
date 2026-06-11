@@ -22,7 +22,7 @@ class AsteroidsEnv(gym.Env):
         self.observation_space = gym.spaces.Box(
             low=-1, 
             high=1,
-            shape=(85,),
+            shape=(13,),
             dtype=np.float32
         )
 
@@ -39,8 +39,13 @@ class AsteroidsEnv(gym.Env):
         
         state = np.array(state_cpp, dtype=np.float32)
         info = {}
-        if stats["valid"]:
-            info["episode_stats"] = stats
+        if stats[0]:
+            info["episode_stats"] = {
+                "shotsFired": stats[1],
+                "shotsHit": stats[2],
+                "survivalTime": stats[3],
+                "victory": stats[4]
+            }
         
         return state, float(reward), bool(terminated), bool(truncated), info
 

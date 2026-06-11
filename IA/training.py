@@ -50,13 +50,13 @@ if __name__ == "__main__":
     num_envs = 4
     env_diff1 = SubprocVecEnv([make_env(i) for i in range(num_envs)])
 
-    OS_CHECKPOINT_DIR = "checkpoints_ppo_10ast_withoutAim"
+    OS_CHECKPOINT_DIR = "checkpoints_ppo_1ast"
     os.makedirs(OS_CHECKPOINT_DIR, exist_ok=True)
 
     checkpoint_callback = CheckpointCallback(
         save_freq=max(10000, 200000 // num_envs),
         save_path=OS_CHECKPOINT_DIR,
-        name_prefix="checkpoints_ppo_10ast_withoutAim",
+        name_prefix="checkpoints_ppo_1ast",
         save_replay_buffer=False,
         save_vecnormalize=False,
         verbose=1
@@ -88,11 +88,11 @@ if __name__ == "__main__":
     # modelo_ppo = PPO.load("ppo_10ast_changed", env=env_diff1)
 
     modelo_ppo.learn(
-        total_timesteps=2000000,
-        tb_log_name="ppo_10ast_withoutAim",
+        total_timesteps=1000000,
+        tb_log_name="ppo_1ast",
         callback=callback,
         reset_num_timesteps=False,
         progress_bar=True
     )
 
-    modelo_ppo.save("ppo_10ast_withoutAim")
+    modelo_ppo.save("ppo_1ast")
