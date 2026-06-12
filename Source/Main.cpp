@@ -37,6 +37,7 @@ int main(int argc, char** argv)
             // # Ações Discretas(0: Dir, 1: Esq, 2: Tiro, 3: Frente, 4: Nada)
             int acaoSimulada = 2;
             auto [obs, reward, terminated, truncated, stats] = game.Step(acaoSimulada);
+            
             totalReward += reward;
 
             if (terminated || truncated)

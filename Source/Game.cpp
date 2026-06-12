@@ -32,7 +32,7 @@ Game::Game(const bool visualize, int difficulty)
         ,mAllAsteroidsDestroyedReward(10.0f)
 {
         if (difficulty == 1) {
-            mInitialAsteroidsNumber = 10;
+            mInitialAsteroidsNumber = 4;
             mAllowSplitAsteroids = false;
             mTimeReward = 0.0f;
             mLasersMissedReward = -0.05f;
@@ -329,13 +329,15 @@ float Game::GetWrappedDistanceSq(const Actor* a, const Actor* b) const {
     return 999999999.0f;
 }
 
-// void Game::orderAsteroids (std::vector<class Asteroid*>& asteroids) {
-//     std::sort(asteroids.begin(), asteroids.end(), [this](const Asteroid* a, const Asteroid* b) {
-//         const float distA = GetWrappedDistanceSq(mShip, a);
-//         const float distB = GetWrappedDistanceSq(mShip, b);
-//         return distA < distB;
-//     });
-// }
+void Game::orderAsteroids () {
+    if (mCurrentAsteroidsNumber != 0) {
+        std::sort(mAsteroids.begin(), mAsteroids.end(), [this](const Asteroid* a, const Asteroid* b) {
+            const float distA = GetWrappedDistanceSq(mShip, a);
+            const float distB = GetWrappedDistanceSq(mShip, b);
+            return distA < distB;
+        });
+    }
+}
 
 void Game::AddActor(Actor* actor) {
     if (mUpdatingActors)
@@ -446,7 +448,7 @@ std::vector<float> Game::Reset() {
  */
 std::vector<float> Game::GetObservationSpace() const {
     std::vector<float> states;
-    states.reserve(85);
+    states.reserve(5 + mInitialAsteroidsNumber*8);
     //Dados da nave
     states.emplace_back(mShip->GetForward().x);
     states.emplace_back(mShip->GetForward().y);
@@ -454,8 +456,8 @@ std::vector<float> Game::GetObservationSpace() const {
     states.emplace_back(mShip->GetComponent<RigidBodyComponent>()->GetVelocity().y / MAX_SHIP_VELOCITY);
     states.emplace_back(mShip->GetLaserCoolDown() / MAX_LASER_COOLDOWN);
 
-    for (int i = 0; i < 10; i++) {
-        if (i < mAsteroids.size() && mAsteroids[i] != nullptr) {
+    for (int i = 0; i < 2; i++) {
+        if (mAsteroids[i] != nullptr) {
             float dx = GetWrappedDelta(mShip->GetPosition().x, mAsteroids[i]->GetPosition().x, static_cast<float>(mWindowWidth)) / (static_cast<float>(mWindowWidth) / 2.0f);
             float dy = GetWrappedDelta(mShip->GetPosition().y, mAsteroids[i]->GetPosition().y, static_cast<float>(mWindowHeight)) / (static_cast<float>(mWindowHeight) / 2.0f);
             float distance = std::sqrt(dx * dx + dy * dy);
@@ -575,6 +577,7 @@ float Game::CalculateReward() {
 std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int, bool>> Game::Step(int action) {
     mAsteroidDestroyed = false;
     mLaserMissedInTheStep = false;
+    orderAsteroids();
     ApplyAction(static_cast<Action>(action));
 
     ProcessInput();
@@ -597,6 +600,12 @@ std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int
     std::vector<float> obs = GetObservationSpace();
     float reward = CalculateReward();
     std::tuple tuple = std::make_tuple(obs, reward, terminated, truncated, stats);
+    // for (int i=0; i<mAsteroids.size(); i++) {
+    //     if (mAsteroids[i] != nullptr)
+    //         SDL_Log("%d: (%f.1,%f.1)", i, mAsteroids[i]->GetPosition().x, mAsteroids[i]->GetPosition().x);
+    //     else
+    //         SDL_Log("%d: Destruido", i);
+    // }
 
     return tuple;
 }
