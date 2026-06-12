@@ -62,7 +62,7 @@ private:
     void Reset();
     static float GetWrappedDelta(float p1, float p2, float limit);
     float GetWrappedDistanceSq(const Actor* a, const Actor* b) const;
-    void orderAsteroids(std::vector<class Asteroid*>& asteroids);
+    void orderAsteroids();
     bool CalculateDistanceAndDirectionToTheNearestAsteroid(float distanceLimit, float dotProductLimit);
     bool IsAimingAtAnyAsteroid(float distanceLimit, float dotProductLimit);
     float CalculateReward();

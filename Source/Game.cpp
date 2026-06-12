@@ -32,7 +32,7 @@ Game::Game(int windowWidth, int windowHeight, int difficulty)
         ,mAllAsteroidsDestroyedReward(5.0f)
 {
     if (difficulty == 1) {
-        mInitialAsteroidsNumber = 10;
+        mInitialAsteroidsNumber = 4;
         mAllowSplitAsteroids = false;
         mTimeReward = -0.002f;
         mLasersMissedReward = -0.02f;
@@ -107,6 +107,13 @@ void Game::RunLoop()
     {
         ProcessInput();
         UpdateGame();
+        SDL_Log("Asteroides:");
+        for (int i=0; i<mAsteroids.size(); i++) {
+            if (mAsteroids[i] != nullptr)
+                SDL_Log("%d: (%f.1,%f.1)", i, mAsteroids[i]->GetPosition().x, mAsteroids[i]->GetPosition().x);
+            else
+                SDL_Log("%d: Destruido", i);
+        }
         if (mGameState == GameState::Playing) {
             GenerateOutput();
         }
@@ -168,6 +175,8 @@ void Game::UpdateGame()
             mGameState = GameState::Playing;
         }
     }
+
+    orderAsteroids();
 }
 
 void Game::UpdateActors(float deltaTime)
@@ -357,7 +366,7 @@ float Game::GetWrappedDistanceSq(const Actor* a, const Actor* b) const{
     return 999999999.0f;
 }
 
-void Game::orderAsteroids (std::vector<class Asteroid*>& asteroids) {
+void Game::orderAsteroids () {
     std::sort(mAsteroids.begin(), mAsteroids.end(), [this](const Asteroid* a, const Asteroid* b) {
         const float distA = GetWrappedDistanceSq(mShip, a);
         const float distB = GetWrappedDistanceSq(mShip, b);
