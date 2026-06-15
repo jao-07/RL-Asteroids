@@ -1,11 +1,11 @@
 from stable_baselines3 import PPO
-from asteroids_env import AsteroidsEnv  # Importa a classe que criamos
+from asteroids_env import AsteroidsEnv
 
 print("Carregando o ambiente com interface gráfica...")
 env = AsteroidsEnv(render_mode="human")
 
 print("Carregando o modelo treinado...")
-model = PPO.load("ppo_4ast_2obs")
+model = PPO.load("ppo_10ast_2obs")
 
 obs, _ = env.reset()
 done = False

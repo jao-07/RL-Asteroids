@@ -32,7 +32,7 @@ Game::Game(const bool visualize, int difficulty)
         ,mAllAsteroidsDestroyedReward(10.0f)
 {
         if (difficulty == 1) {
-            mInitialAsteroidsNumber = 4;
+            mInitialAsteroidsNumber = 10;
             mAllowSplitAsteroids = false;
             mTimeReward = 0.0f;
             mLasersMissedReward = -0.05f;
@@ -448,7 +448,8 @@ std::vector<float> Game::Reset() {
  */
 std::vector<float> Game::GetObservationSpace() const {
     std::vector<float> states;
-    states.reserve(5 + mInitialAsteroidsNumber*8);
+    int asteroidsInObs = 2;
+    states.reserve(5 + asteroidsInObs*8);
     //Dados da nave
     states.emplace_back(mShip->GetForward().x);
     states.emplace_back(mShip->GetForward().y);
@@ -456,7 +457,7 @@ std::vector<float> Game::GetObservationSpace() const {
     states.emplace_back(mShip->GetComponent<RigidBodyComponent>()->GetVelocity().y / MAX_SHIP_VELOCITY);
     states.emplace_back(mShip->GetLaserCoolDown() / MAX_LASER_COOLDOWN);
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < asteroidsInObs; i++) {
         if (mAsteroids[i] != nullptr) {
             float dx = GetWrappedDelta(mShip->GetPosition().x, mAsteroids[i]->GetPosition().x, static_cast<float>(mWindowWidth)) / (static_cast<float>(mWindowWidth) / 2.0f);
             float dy = GetWrappedDelta(mShip->GetPosition().y, mAsteroids[i]->GetPosition().y, static_cast<float>(mWindowHeight)) / (static_cast<float>(mWindowHeight) / 2.0f);
