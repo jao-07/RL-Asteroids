@@ -33,7 +33,7 @@ Game::Game(const bool visualize, int difficulty)
 {
         if (difficulty == 1) {
             mInitialAsteroidsNumber = 10;
-            mAllowSplitAsteroids = false;
+            mAllowSplitAsteroids = true;
             mTimeReward = 0.0f;
             mLasersMissedReward = -0.05f;
             mProximityAndDirectionReward = 0.0f;
@@ -575,7 +575,7 @@ float Game::CalculateReward() {
     return reward;
 }
 
-std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int, bool>> Game::Step(int action) {
+std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int, bool, float>> Game::Step(int action) {
     mAsteroidDestroyed = false;
     mLaserMissedInTheStep = false;
     orderAsteroids();
@@ -589,7 +589,7 @@ std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int
     bool terminated = mShip->GetIsDead() || mCurrentAsteroidsNumber == 0;
     bool truncated = mStepsDone >= MAX_STEPS;
 
-    std::tuple stats{false, 0, 0, 0, false};
+    std::tuple stats{false, 0, 0, 0, false, 0.0f};
     if (terminated || truncated)
     {
         std::get<0>(stats) = true;
@@ -597,6 +597,7 @@ std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int
         std::get<2>(stats) = mLasersHit;
         std::get<3>(stats) = mStepsDone;
         std::get<4>(stats) = mCurrentAsteroidsNumber == 0;
+        std::get<5>(stats) = static_cast<float>(mLasersHit) / static_cast<float>(mLasersFired);
     }
     std::vector<float> obs = GetObservationSpace();
     float reward = CalculateReward();

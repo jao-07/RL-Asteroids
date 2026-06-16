@@ -44,7 +44,8 @@ class AsteroidsEnv(gym.Env):
                 "shotsFired": stats[1],
                 "shotsHit": stats[2],
                 "survivalTime": stats[3],
-                "victory": stats[4]
+                "victory": stats[4],
+                "accuracy": stats[5]
             }
         
         return state, float(reward), bool(terminated), bool(truncated), info

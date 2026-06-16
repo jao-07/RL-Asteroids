@@ -51,7 +51,7 @@ public:
     std::vector<float> Reset();
 
     //void SetAsteroidDestroyed(bool destroyed);
-    std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int, bool>> Step(int action);
+    std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int, bool, float>> Step(int action);
 
     void SetLasersMissed(bool state) { mLaserMissedInTheStep = state; }
     void IncreaseLasersHit() {mLasersHit++;}
@@ -113,7 +113,7 @@ private:
     float MAX_ASTEROID_VELOCITY = 40.0f;
     float MAX_RADIUS = 80.0f;
     float MAX_LASER_COOLDOWN = 1.0f;
-    int MAX_STEPS = 2000;
+    int MAX_STEPS = 5000;
 
     bool mAllowSplitAsteroids;
     int mInitialAsteroidsNumber;
