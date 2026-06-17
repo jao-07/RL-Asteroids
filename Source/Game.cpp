@@ -28,12 +28,12 @@ Game::Game(const bool visualize, int difficulty)
         ,mShip(nullptr)
         ,mGameState(GameState::Playing)
         ,mAsteroidDestroyedReward(1.0f)
-        ,mDeathReward(-10.0f)
+        ,mDeathReward(-20.0f)
         ,mAllAsteroidsDestroyedReward(10.0f)
 {
         if (difficulty == 1) {
             mInitialAsteroidsNumber = 10;
-            mAllowSplitAsteroids = true;
+            mAllowSplitAsteroids = false;
             mTimeReward = 0.0f;
             mLasersMissedReward = -0.05f;
             mProximityAndDirectionReward = 0.0f;
@@ -428,6 +428,8 @@ std::vector<float> Game::Reset() {
     mCurrentAsteroidsNumber = 0;
     InitializeActors();
     mStepsDone = 0;
+    mLasersHit = 0;
+    mLasersFired = 0;
 
     return GetObservationSpace();
 }

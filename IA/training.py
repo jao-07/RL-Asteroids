@@ -55,13 +55,13 @@ if __name__ == "__main__":
     num_envs = 4
     env_diff1 = SubprocVecEnv([make_env(i) for i in range(num_envs)])
 
-    OS_CHECKPOINT_DIR = "Checkpoints/checkpoints_ppo_10ast_2obs_split"
+    OS_CHECKPOINT_DIR = "Checkpoints/checkpoints_ppo_10ast_2obs_2"
     os.makedirs(OS_CHECKPOINT_DIR, exist_ok=True)
 
     checkpoint_callback = CheckpointCallback(
         save_freq=max(10000, 200000 // num_envs),
         save_path=OS_CHECKPOINT_DIR,
-        name_prefix="checkpoints_ppo_10ast_2obs_split",
+        name_prefix="checkpoints_ppo_10ast_2obs_2",
         save_replay_buffer=False,
         save_vecnormalize=False,
         verbose=1
@@ -90,14 +90,14 @@ if __name__ == "__main__":
     #     verbose=1,
     #     tensorboard_log="./ppo_diff1/"
     # )
-    modelo_ppo = PPO.load("ppo_10ast_2obs_split", env=env_diff1)
+    modelo_ppo = PPO.load("ppo_10ast_2obs_2", env=env_diff1)
 
     modelo_ppo.learn(
-        total_timesteps=500000,
-        tb_log_name="ppo_10ast_2obs_split",
+        total_timesteps=1000000,
+        tb_log_name="ppo_10ast_2obs_2",
         callback=callback,
         reset_num_timesteps=False,
         progress_bar=True
     )
 
-    modelo_ppo.save("ppo_10ast_2obs_split")
+    modelo_ppo.save("ppo_10ast_2obs_2")
