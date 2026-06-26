@@ -39,11 +39,11 @@ Game::Game(const bool visualize, int difficulty)
             mProximityAndDirectionReward = 0.0f;
         }
         else if (difficulty == 2) {
-            mInitialAsteroidsNumber = 1;
-            mAllowSplitAsteroids = false;
-            mTimeReward = -0.004f;
-            mLasersMissedReward = -0.01f;
-            mProximityAndDirectionReward = 0.05f;
+            mInitialAsteroidsNumber = 10;
+            mAllowSplitAsteroids = true;
+            mTimeReward = 0.00f;
+            mLasersMissedReward = -0.05f;
+            mProximityAndDirectionReward = 0.00f;
         }
         else {
             mInitialAsteroidsNumber = 10;
