@@ -33,7 +33,7 @@ Game::Game(const bool visualize, int difficulty)
 {
         if (difficulty == 1) {
             mInitialAsteroidsNumber = 10;
-            mAllowSplitAsteroids = false;
+            mAllowSplitAsteroids = true;
             mTimeReward = 0.0f;
             mLasersMissedReward = -0.05f;
             mProximityAndDirectionReward = 0.0f;

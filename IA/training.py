@@ -74,23 +74,23 @@ if __name__ == "__main__":
         tensorboard_callback
     ])
 
-    # modelo_ppo = PPO(
-    #     "MlpPolicy",
-    #     env_diff1,
-    #     learning_rate=3e-4,
-    #     n_steps=2048,
-    #     batch_size=256,
-    #     gamma=0.99,
-    #     gae_lambda=0.95,
-    #     ent_coef=0.005,
-    #     policy_kwargs=dict(net_arch=dict(
-    #         pi=[128, 128],
-    #         vf=[128, 128])
-    #     ),
-    #     verbose=1,
-    #     tensorboard_log="./ppo_diff1/"
-    # )
-    modelo_ppo = PPO.load("ppo_10ast_2obs_2", env=env_diff1)
+    modelo_ppo = PPO(
+        "MlpPolicy",
+        env_diff1,
+        learning_rate=3e-4,
+        n_steps=2048,
+        batch_size=256,
+        gamma=0.99,
+        gae_lambda=0.95,
+        ent_coef=0.005,
+        policy_kwargs=dict(net_arch=dict(
+            pi=[128, 128],
+            vf=[128, 128])
+        ),
+        verbose=1,
+        tensorboard_log="./ppo_diff1/"
+    )
+    # modelo_ppo = PPO.load("ppo_10ast_2obs_2", env=env_diff1)
 
     modelo_ppo.learn(
         total_timesteps=1000000,
