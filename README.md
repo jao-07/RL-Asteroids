@@ -19,9 +19,9 @@ Para instalar, siga os passos de acordo com o seu sistema operacional:
 ### Linux
 
 1. Acesse o repositório do [SDL](https://github.com/libsdl-org/SDL/releases/tag/release-2.32.2) e baixe o pacote `Source code.zip`
-
+   
 2. Extraia os arquivos no diretório temporário `/tmp/SDL2/`
-
+   
 3. Instale a biblioteca no diretório `/opt/SDL2/`
 ```bash
 cd /tmp/SDL2/
@@ -35,7 +35,7 @@ cd /tmp/SDL2/
 1. Acesse o repositório do [SDL](https://github.com/libsdl-org/SDL/releases/tag/release-2.32.2) e baixe o pacote `SDL2-devel-2.32.2-VC.zip`.
 
 2. Extraia os arquivos no diretório `C:\Arquivos de Programas\SDL2\`
-
+   
 3. Após isso, copie o arquivo `SDL2.dll` do diretório `C:\Arquivos de Programas\SDL2\lib\x64` para o diretório `C:\Windows\System32\`
 
 ### Mac
