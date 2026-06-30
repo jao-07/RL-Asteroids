@@ -4,14 +4,14 @@ O presente projeto tem como objetivo a criação de uma versão do jogo Asteroid
 No repositório há o relatório final da primeira parte do projeto, onde está descrito algumas decisões de projeto e resultados obtidos.
 Segue abaixo as instruções e recomendações de instalação das ferramentas para a compilação do jogo e para o treinamento e avaliação do agente:
 
-## Jogo Asteroids em C++
+# Jogo Asteroids em C++
 
-### CLion
+## CLion
 
 Para compilar e executar o jogo, é recomendado utilizar a IDE CLion, pois ela já vem com um compilador de C++ na instalação, e ela facilita muito a compilação e execução do jogo.
 Para instalar, acesse o link https://www.jetbrains.com/clion/ e siga as instruções para o seu sistema operacional.
 
-### Biblioteca SDL
+## Biblioteca SDL
 
 Para o desenvolvimento do jogo, foi utilizada a biblioteca SDL2 (Simple DirectMedia Layer). Foi utilizada a versão 2.32.2.
 Para instalar, siga os passos de acordo com o seu sistema operacional:
