@@ -43,3 +43,46 @@ cd /tmp/SDL2/
 1. Acesse o repositório do [SDL](https://github.com/libsdl-org/SDL/releases/tag/release-2.32.2) e baixe o pacote `SDL2-2.32.2.dmg`
 
 2. Clique na imagem para abrí-la e copie e o pacote `SDL2.framework` para o diretório `/Library/Frameworks/`.
+
+
+# Ambiente de treinamento em Python
+
+Para esse projeto, foi utilizada a versão 3.13.5 do Python, mas possivelmente outras versões da linguagem também funcionarão.
+Para criar o ambiente, entre no diretório `IA`, e siga os seguintes passos:
+
+1. Crie um ambiente virtual (venv)
+```bash
+python -m venv venv
+```
+
+2. Faça a ativação do ambiente
+
+   Windows:
+   ```bash
+   venv\Scripts\activate
+   ```
+
+   Linux ou Mac:
+   ```bash
+   source venv/bin/activate
+   ```
+
+3. Faça a instalação dos pacotes necessários:
+   ```bash
+   python -m pip install -r requirements.txt
+   ```
+
+Como o projeto utiliza a biblioteca pybind11 para fazer a comunicação entre o Python e o C++, o arquivo CMakeLists.txt, que é responsável pela compilação do jogo, foi configurado para localizar o arquivo pybind11Config.cmake ou pybind11-config.cmake, para produzir o arquivo .pyd, que é o arquivo que permite com que o programa em Python faça a importação do módulo do jogo.
+
+Para isso, deve-se fazer a seguinte configuração no CLion:
+Acesse `Configurações(Settings) -> Build,Execution,Deployment -> CMake` e no campo `Cmake option` adicione a seguinte informação do pathing do arquivo do pybind11, da seguinte forma:
+
+`-DCMAKE_PREFIX_PATH="C:\Users\joaovecruz\CLionProjects\RL-Asteroids\IA\venv\Lib\site-packages\pybind11\share\cmake\pybind11`
+
+Mude para o caminho correto da sua máquina.
+
+Dessa forma, o CMake deve funcionar bem e compilar o jogo
+
+
+
+
