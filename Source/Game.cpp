@@ -16,7 +16,17 @@
 #include "Random.h"
 #include "Actors/Particle.h"
 
-Game::Game(const bool visualize, int difficulty)
+Game::Game(
+        const bool visualize,
+        bool allowSplitAsteroids,
+        int asteroidsNumber,
+        float asteroidDestroyedReward,
+        float loseReward,
+        float winReward,
+        float laserMissReward,
+        float timeReward,
+        float proximityAndDirectionReward
+        )
         :mVisualize(visualize)
         ,mWindow(nullptr)
         ,mRenderer(nullptr)
@@ -27,31 +37,16 @@ Game::Game(const bool visualize, int difficulty)
         ,mUpdatingActors(false)
         ,mShip(nullptr)
         ,mGameState(GameState::Playing)
-        ,mAsteroidDestroyedReward(1.0f)
-        ,mDeathReward(-20.0f)
-        ,mAllAsteroidsDestroyedReward(10.0f)
+        ,mAllowSplitAsteroids(allowSplitAsteroids)
+        ,mInitialAsteroidsNumber(asteroidsNumber)
+        ,mTimeReward(timeReward)
+        ,mDeathReward(loseReward)
+        ,mAsteroidDestroyedReward(asteroidDestroyedReward)
+        ,mLasersMissedReward(laserMissReward)
+        ,mAllAsteroidsDestroyedReward(winReward)
+        ,mProximityAndDirectionReward(proximityAndDirectionReward)
 {
-        if (difficulty == 1) {
-            mInitialAsteroidsNumber = 10;
-            mAllowSplitAsteroids = true;
-            mTimeReward = 0.0f;
-            mLasersMissedReward = -0.05f;
-            mProximityAndDirectionReward = 0.0f;
-        }
-        else if (difficulty == 2) {
-            mInitialAsteroidsNumber = 10;
-            mAllowSplitAsteroids = true;
-            mTimeReward = 0.00f;
-            mLasersMissedReward = -0.05f;
-            mProximityAndDirectionReward = 0.00f;
-        }
-        else {
-            mInitialAsteroidsNumber = 10;
-            mAllowSplitAsteroids = true;
-            mTimeReward = -0.05f;
-            mLasersMissedReward = -0.5f;
-            mProximityAndDirectionReward = 0.01f;
-        }
+
 }
 
 bool Game::Initialize()

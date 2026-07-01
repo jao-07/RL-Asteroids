@@ -10,7 +10,7 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(asteroids_cpp, m) {
     py::class_<Game>(m, "Game")
-        .def(py::init<bool, int>())
+        .def(py::init<bool, bool, int, float, float, float, float, float, float>())
 
         .def("initialize", &Game::Initialize)
         .def("shutdown", &Game::Shutdown)

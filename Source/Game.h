@@ -19,7 +19,16 @@
 class Game
 {
 public:
-    Game(bool visualize, int difficulty);
+    Game(bool visualize = false,
+        bool allowSplitAsteroids = false,
+        int asteroidsNumber = 10,
+        float asteroidDestroyedReward = 1.0f,
+        float loseReward = -20.0f,
+        float winReward = 10.0f,
+        float laserMissReward = -0.05f,
+        float timeReward = 0.0f,
+        float proximityAndDirectionReward = 0.0f
+        );
 
     bool Initialize();
     void RunLoop();

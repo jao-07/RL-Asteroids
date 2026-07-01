@@ -4,13 +4,39 @@ import asteroids_cpp
 
 class AsteroidsEnv(gym.Env):
 
-    def __init__(self, render_mode="none", difficulty=1):
+    def __init__(self, 
+                 render_mode="none", 
+                 allowSplitAsteroids = False, 
+                 asteroidsNumber = 10, 
+                 asteroidDestroyedReward = 1.0, 
+                 loseReward = -20.0, 
+                 winReward = 10.0, 
+                 laserMissReward = -0.05, 
+                 timeReward = 0.0, 
+                 proximityAndDirectionReward = 0.0
+                 ):
         super().__init__()
         self.render_mode = render_mode
-        self.difficulty = difficulty
+        self.allowSplitAsteroids = allowSplitAsteroids
+        self.asteroidsNumber = asteroidsNumber
+        self.asteroidDestroyedReward = asteroidDestroyedReward
+        self.loseReward = loseReward
+        self.winReward = winReward
+        self.laserMissReward = laserMissReward
+        self.timeReward = timeReward
+        self.proximityAndDirectionReward = proximityAndDirectionReward
 
         visualize = (self.render_mode == "human")
-        self.game = asteroids_cpp.Game(visualize, difficulty)
+        self.game = asteroids_cpp.Game(visualize, 
+                                       allowSplitAsteroids,
+                                       asteroidsNumber,
+                                       asteroidDestroyedReward,
+                                       loseReward,
+                                       winReward,
+                                       laserMissReward,
+                                       timeReward,
+                                       proximityAndDirectionReward
+                                       )
         success = self.game.initialize()
         if not success:
             print("Error in the SDL Window creation!")

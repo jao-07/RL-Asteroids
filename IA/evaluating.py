@@ -2,7 +2,7 @@ from stable_baselines3 import PPO
 from asteroids_env import AsteroidsEnv
 
 print("Carregando o ambiente com interface gráfica...")
-env = AsteroidsEnv(render_mode="human", difficulty=1)
+env = AsteroidsEnv(render_mode="human")
 
 print("Carregando o modelo treinado...")
 model = PPO.load("ppo_10ast_2obs_2")
