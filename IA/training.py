@@ -1,9 +1,9 @@
 import asteroids_cpp
 import os
+from pathlib import Path
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CallbackList, CheckpointCallback, BaseCallback
 from stable_baselines3.common.vec_env import SubprocVecEnv
-from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.monitor import Monitor
 from asteroids_env import AsteroidsEnv
 
@@ -46,22 +46,22 @@ class CustomTensorboardCallback(BaseCallback):
 
 def make_env(rank, seed=0):
     def _init():
-        env = AsteroidsEnv(render_mode="none", difficulty=1)
+        env = AsteroidsEnv(render_mode="none")
         return Monitor(env)
     return _init
 
 if __name__ == "__main__":
 
     num_envs = 4
-    env_diff1 = SubprocVecEnv([make_env(i) for i in range(num_envs)])
+    env = SubprocVecEnv([make_env(i) for i in range(num_envs)])
 
-    OS_CHECKPOINT_DIR = "Checkpoints/checkpoints_ppo_10ast_2obs_2"
+    OS_CHECKPOINT_DIR = "Checkpoints/checkpoints_ppo_10ast_2obs"
     os.makedirs(OS_CHECKPOINT_DIR, exist_ok=True)
 
     checkpoint_callback = CheckpointCallback(
         save_freq=max(10000, 200000 // num_envs),
         save_path=OS_CHECKPOINT_DIR,
-        name_prefix="checkpoints_ppo_10ast_2obs_2",
+        name_prefix="teste",
         save_replay_buffer=False,
         save_vecnormalize=False,
         verbose=1
@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
     modelo_ppo = PPO(
         "MlpPolicy",
-        env_diff1,
+        env,
         learning_rate=3e-4,
         n_steps=2048,
         batch_size=256,
@@ -88,16 +88,19 @@ if __name__ == "__main__":
             vf=[128, 128])
         ),
         verbose=1,
-        tensorboard_log="./ppo_diff1/"
+        tensorboard_log="./tensorBoardFiles/"
     )
     # modelo_ppo = PPO.load("ppo_10ast_2obs_2", env=env_diff1)
 
     modelo_ppo.learn(
         total_timesteps=1000000,
-        tb_log_name="ppo_10ast_2obs_2",
+        tb_log_name="teste",
         callback=callback,
         reset_num_timesteps=False,
         progress_bar=True
     )
 
-    modelo_ppo.save("ppo_10ast_2obs_2")
+    MODELS_DIR = Path("models")
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+    path = MODELS_DIR / "model_10ast"
+    modelo_ppo.save(path)
