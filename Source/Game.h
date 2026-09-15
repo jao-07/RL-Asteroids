@@ -62,6 +62,8 @@ public:
     //void SetAsteroidDestroyed(bool destroyed);
     std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int, bool, float>> Step(int action);
 
+    std::vector<uint8_t> GetImageObservation(int target_w, int target_h);
+
     void SetLasersMissed(bool state) { mLaserMissedInTheStep = state; }
     void IncreaseLasersHit() {mLasersHit++;}
     void IncreaseLasersFired() {mLasersFired++;}
@@ -74,6 +76,7 @@ public:
 private:
     void ProcessInput();
     void UpdateGame();
+    void RenderScene();
     void GenerateOutput();
     void DeleteActors();
 

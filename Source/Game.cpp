@@ -156,29 +156,6 @@ void Game::ProcessInput() {
     }
 }
 
-// void Game::ProcessInput()
-// {
-//
-//     SDL_Event event;
-//     while (SDL_PollEvent(&event))
-//     {
-//         switch (event.type)
-//         {
-//             case SDL_QUIT:
-//                 Quit();
-//                 break;
-//         }
-//     }
-//
-//     const Uint8* state = SDL_GetKeyboardState(nullptr);
-//     mUpdatingActors = true;
-//     for (auto actor : mActors)
-//     {
-//         actor->ProcessInput(state);
-//     }
-//     mUpdatingActors = false;
-// }
-
 void Game::UpdateGame() {
     for (int i=mFramesToProcess; i>0; i--){
         for (auto actor : mActors){
@@ -379,7 +356,7 @@ void Game::RemoveDrawable(class DrawComponent *drawable)
     mDrawables.erase(iter);
 }
 
-void Game::GenerateOutput()
+void Game::RenderScene()
 {
     // Set draw color to black
     SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
@@ -391,6 +368,11 @@ void Game::GenerateOutput()
     {
         drawable->Draw(mRenderer);
     }
+}
+
+void Game::GenerateOutput()
+{
+    RenderScene();
 
     // Swap front buffer and back buffer
     SDL_RenderPresent(mRenderer);
@@ -607,4 +589,36 @@ std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int
     // }
 
     return tuple;
+}
+
+std::vector<uint8_t> Game::GetImageObservation(int target_w = 84, int target_h = 84) {
+    SDL_Texture* target_texture = SDL_CreateTexture(
+        mRenderer,
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_TARGET,
+        target_w,
+        target_h
+    );
+
+    SDL_SetRenderTarget(mRenderer, target_texture);
+    RenderScene();
+
+    std::vector<uint32_t> rgba_pixels(target_w * target_h);
+    SDL_RenderReadPixels(
+        mRenderer,
+        nullptr,
+        SDL_PIXELFORMAT_RGBA8888,
+        rgba_pixels.data(),
+        target_w * sizeof(uint32_t)
+    );
+
+    SDL_SetRenderTarget(mRenderer, nullptr);
+    SDL_DestroyTexture(target_texture);
+
+    std::vector<uint8_t> single_channel_pixels(target_w * target_h);
+    for (int i = 0; i < target_w * target_h; ++i) {
+        single_channel_pixels[i] = static_cast<uint8_t>((rgba_pixels[i] >> 24) & 0xFF);
+    }
+
+    return single_channel_pixels;
 }

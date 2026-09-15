@@ -17,5 +17,6 @@ PYBIND11_MODULE(asteroids_cpp, m) {
         .def("step", &Game::Step)
         .def("reset", &Game::Reset)
 
+
         .def_readonly("m_steps_done", &Game::mStepsDone);
 }
