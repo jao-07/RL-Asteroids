@@ -57,12 +57,12 @@ public:
     void AddAsteroid(class Asteroid* ast);
     void RemoveAsteroid(class Asteroid* ast);
     std::vector<class Asteroid*>& GetAsteroids() { return mAsteroids; }
-    std::vector<float> Reset();
+    void Reset();
 
     //void SetAsteroidDestroyed(bool destroyed);
-    std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int, bool, float>> Step(int action);
+    std::tuple<float, bool, bool, std::tuple<bool, int, int, int, bool, float>> Step(int action);
 
-    std::vector<uint8_t> GetImageObservation(int target_w, int target_h);
+    std::vector<uint8_t> GetImageObservation(int target_w = 84, int target_h = 84);
 
     void SetLasersMissed(bool state) { mLaserMissedInTheStep = state; }
     void IncreaseLasersHit() {mLasersHit++;}

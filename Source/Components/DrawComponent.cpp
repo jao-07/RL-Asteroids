@@ -19,25 +19,50 @@ DrawComponent::~DrawComponent()
     mOwner->GetGame()->RemoveDrawable(this);
 }
 
+// void DrawComponent::DrawPolygon(SDL_Renderer *renderer, std::vector<Vector2>& vertices)
+// {
+//     Vector2 pos = mOwner->GetPosition();
+//
+//     for (int i=0; i<vertices.size()-1; i++) {
+//         SDL_RenderDrawLine(renderer, vertices[i].x + pos.x, vertices[i].y + pos.y, vertices[i+1].x + pos.x, vertices[i+1].y + pos.y);
+//     }
+//
+//     SDL_RenderDrawLine(renderer, vertices.back().x + pos.x, vertices.back().y + pos.y, vertices[0].x + pos.x, vertices[0].y + pos.y);
+// }
+
 void DrawComponent::DrawPolygon(SDL_Renderer *renderer, std::vector<Vector2>& vertices)
 {
+    if (vertices.size() < 3) return;
+
     Vector2 pos = mOwner->GetPosition();
+    SDL_Color color = {255, 255, 255, 255};
 
-    // --------------
-    // TODO - PARTE 1
-    // --------------
-
-    // TODO 1.1 (~3 linhas): percorra do primeiro até o penúltimo vértices, utilizando a função
-    //  SDL_RenderDrawLine para desenhar linhas entre os vértices i e i+1. Some a posição do dono
-    //  do componente (pos) a cada vértice.
-    for (int i=0; i<vertices.size()-1; i++) {
-        SDL_RenderDrawLine(renderer, vertices[i].x + pos.x, vertices[i].y + pos.y, vertices[i+1].x + pos.x, vertices[i+1].y + pos.y);
+    std::vector<SDL_Vertex> sdlVertices(vertices.size());
+    for (size_t i = 0; i < vertices.size(); ++i) {
+        sdlVertices[i] = {
+            { static_cast<float>(vertices[i].x + pos.x), static_cast<float>(vertices[i].y + pos.y) },
+            color,
+            { 0.0f, 0.0f }
+        };
     }
 
+    std::vector<int> indices;
+    for (size_t i = 1; i < vertices.size() - 1; ++i) {
+        indices.push_back(0);
+        indices.push_back(i);
+        indices.push_back(i + 1);
+    }
 
-    // TODO 1.2 (~1 linha): Utilize a função SDL_RenderDrawLine para desenhar uma linha entre o último
-    //  e o primeiro vértice. Some a posição do dono do componente (pos) a cada vértice.
-    SDL_RenderDrawLine(renderer, vertices.back().x + pos.x, vertices.back().y + pos.y, vertices[0].x + pos.x, vertices[0].y + pos.y);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+    SDL_RenderGeometry(
+        renderer,
+        nullptr,
+        sdlVertices.data(),
+        static_cast<int>(sdlVertices.size()),
+        indices.data(),
+        static_cast<int>(indices.size())
+    );
 }
 
 void DrawComponent::DrawCircle(SDL_Renderer *renderer, const Vector2& center, const float radius, const int numVertices)
