@@ -591,6 +591,8 @@ std::vector<uint8_t> Game::GetImageObservation(int target_w, int target_h) {
         target_h
     );
 
+    SDL_SetTextureScaleMode(target_texture, SDL_ScaleModeLinear);
+
     SDL_SetRenderTarget(mRenderer, target_texture);
     float scale_x = static_cast<float>(target_w) / mWindowWidth;
     float scale_y = static_cast<float>(target_h) / mWindowHeight;
