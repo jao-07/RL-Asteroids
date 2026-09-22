@@ -6,47 +6,40 @@ from stable_baselines3.common.callbacks import CallbackList, CheckpointCallback,
 from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.monitor import Monitor
 from asteroids_env import AsteroidsEnv
+from gymnasium.wrappers import FrameStackObservation
 
 class CustomTensorboardCallback(BaseCallback):
 
     def _on_step(self):
-
         for info in self.locals["infos"]:
-
             if "episode_stats" in info:
-
                 stats = info["episode_stats"]
-
                 self.logger.record(
                     "custom/shotsFired",
                     stats["shotsFired"]
                 )
-
                 self.logger.record(
                     "custom/shotsHit",
                     stats["shotsHit"]
                 )
-
                 self.logger.record(
                     "custom/survivalTime",
                     stats["survivalTime"]
                 )
-
                 self.logger.record(
                     "custom/victory",
                     stats["victory"]
                 )
-
                 self.logger.record(
                     "custom/accuracy",
                     stats["accuracy"]
                 )
-
         return True
 
-def make_env(rank, seed=0):
+def make_env(rank, stack_size=4):
     def _init():
         env = AsteroidsEnv(render_mode="none")
+        env = FrameStackObservation(env, stack_size=stack_size)
         return Monitor(env)
     return _init
 
@@ -55,7 +48,7 @@ if __name__ == "__main__":
     num_envs = 4
     env = SubprocVecEnv([make_env(i) for i in range(num_envs)])
 
-    OS_CHECKPOINT_DIR = "Checkpoints/checkpoints_ppo_10ast_2obs"
+    OS_CHECKPOINT_DIR = "Checkpoints/checkpoints_cnn_128x128"
     os.makedirs(OS_CHECKPOINT_DIR, exist_ok=True)
 
     checkpoint_callback = CheckpointCallback(
@@ -75,26 +68,22 @@ if __name__ == "__main__":
     ])
 
     modelo_ppo = PPO(
-        "MlpPolicy",
+        "CnnPolicy",
         env,
-        learning_rate=3e-4,
+        learning_rate=1e-4,
         n_steps=2048,
         batch_size=256,
         gamma=0.99,
         gae_lambda=0.95,
-        ent_coef=0.005,
-        policy_kwargs=dict(net_arch=dict(
-            pi=[128, 128],
-            vf=[128, 128])
-        ),
+        ent_coef=0.01,
         verbose=1,
         tensorboard_log="./tensorBoardFiles/"
     )
     # modelo_ppo = PPO.load("ppo_10ast_2obs_2", env=env_diff1)
 
     modelo_ppo.learn(
-        total_timesteps=1000000,
-        tb_log_name="teste",
+        total_timesteps=2000000,
+        tb_log_name="teste_cnn_128x128",
         callback=callback,
         reset_num_timesteps=False,
         progress_bar=True
@@ -102,5 +91,5 @@ if __name__ == "__main__":
 
     MODELS_DIR = Path("models")
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
-    path = MODELS_DIR / "model_10ast"
+    path = MODELS_DIR / "model_cnn_128x128"
     modelo_ppo.save(path)

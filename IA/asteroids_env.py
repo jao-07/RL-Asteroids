@@ -6,7 +6,9 @@ class AsteroidsEnv(gym.Env):
 
     def __init__(self, 
                  render_mode="none", 
-                 allowSplitAsteroids = False, 
+                 allowSplitAsteroids = False,
+                 widthImage = 128,
+                 heightImage = 128,
                  asteroidsNumber = 10, 
                  asteroidDestroyedReward = 1.0, 
                  loseReward = -20.0, 
@@ -17,6 +19,8 @@ class AsteroidsEnv(gym.Env):
                  ):
         super().__init__()
         self.render_mode = render_mode
+        self.widthImage = widthImage
+        self.heightImage = heightImage
         self.allowSplitAsteroids = allowSplitAsteroids
         self.asteroidsNumber = asteroidsNumber
         self.asteroidDestroyedReward = asteroidDestroyedReward
@@ -46,24 +50,25 @@ class AsteroidsEnv(gym.Env):
         self.action_space = gym.spaces.Discrete(5)
 
         self.observation_space = gym.spaces.Box(
-            low=-1, 
-            high=1,
-            shape=(21,),
-            dtype=np.float32
+            low=0,
+            high=255,
+            shape=(1,84,84),
+            dtype=np.uint8
         )
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         
-        state = self.game.reset()
+        self.game.reset()
+        obs = self.game.get_screen_pixels(self.widthImage, self.heightImage)
         info = {}
         
-        return state, info
+        return obs, info
 
     def step(self, action):
-        state_cpp, reward, terminated, truncated, stats = self.game.step(int(action))
+        reward, terminated, truncated, stats = self.game.step(int(action))
+        obs = self.game.get_screen_pixels(self.widthImage, self.heightImage)
         
-        state = np.array(state_cpp, dtype=np.float32)
         info = {}
         if stats[0]:
             info["episode_stats"] = {
@@ -74,7 +79,7 @@ class AsteroidsEnv(gym.Env):
                 "accuracy": stats[5]
             }
         
-        return state, float(reward), bool(terminated), bool(truncated), info
+        return obs, float(reward), bool(terminated), bool(truncated), info
 
     def render(self):
         pass

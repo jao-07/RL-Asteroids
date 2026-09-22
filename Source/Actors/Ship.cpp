@@ -27,7 +27,7 @@ Ship::Ship(Game* game,
         ,mTotalLaserCooldown(totalLaserCooldown)
 {
     Vector2 vert1 = Vector2(-mHeight/2, mHeight/1.5);
-    Vector2 vert2 = Vector2(mHeight, 0);
+    Vector2 vert2 = Vector2(mHeight + 20, 0);
     Vector2 vert3 = Vector2(-mHeight/2, -mHeight/1.5);
     Vector2 vert4 = Vector2(-mHeight/4, 0);
 
