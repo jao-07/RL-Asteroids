@@ -6,7 +6,9 @@ class AsteroidsEnv(gym.Env):
 
     def __init__(self, 
                  render_mode="none", 
-                 allowSplitAsteroids = False, 
+                 allowSplitAsteroids = False,
+                 widthImage = 128,
+                 heightImage = 128,
                  asteroidsNumber = 10, 
                  asteroidDestroyedReward = 1.0, 
                  loseReward = -20.0, 
@@ -17,6 +19,8 @@ class AsteroidsEnv(gym.Env):
                  ):
         super().__init__()
         self.render_mode = render_mode
+        self.widthImage = widthImage
+        self.heightImage = heightImage
         self.allowSplitAsteroids = allowSplitAsteroids
         self.asteroidsNumber = asteroidsNumber
         self.asteroidDestroyedReward = asteroidDestroyedReward
@@ -56,14 +60,14 @@ class AsteroidsEnv(gym.Env):
         super().reset(seed=seed)
         
         self.game.reset()
-        obs = self.game.get_screen_pixels(800,600)
+        obs = self.game.get_screen_pixels(self.widthImage, self.heightImage)
         info = {}
         
         return obs, info
 
     def step(self, action):
         reward, terminated, truncated, stats = self.game.step(int(action))
-        obs = self.game.get_screen_pixels(800,600)
+        obs = self.game.get_screen_pixels(self.widthImage, self.heightImage)
         
         info = {}
         if stats[0]:
