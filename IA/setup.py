@@ -23,6 +23,7 @@ ext_modules = [
         sources,
         include_dirs=[
             "Source",
+            "/usr/include/SDL2",
         ],
         libraries=["SDL2"],
         cxx_std=17,
