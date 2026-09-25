@@ -56,18 +56,23 @@ class AsteroidsEnv(gym.Env):
             dtype=np.uint8
         )
 
+    def _get_obs(self):
+        raw_pixels = self.game.get_screen_pixels(self.widthImage, self.heightImage) 
+        obs = np.array(raw_pixels, dtype=np.uint8).reshape((self.widthImage, self.heightImage))
+        return obs
+
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         
         self.game.reset()
-        obs = self.game.get_screen_pixels(self.widthImage, self.heightImage)
+        obs = self._get_obs()
         info = {}
         
         return obs, info
 
     def step(self, action):
         reward, terminated, truncated, stats = self.game.step(int(action))
-        obs = self.game.get_screen_pixels(self.widthImage, self.heightImage)
+        obs = self._get_obs()
         
         info = {}
         if stats[0]:
