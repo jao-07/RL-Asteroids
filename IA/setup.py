@@ -27,6 +27,7 @@ ext_modules = [
         ],
         libraries=["SDL2"],
         cxx_std=17,
+        extra_compile_args=["-w"],
     ),
 ]
 
