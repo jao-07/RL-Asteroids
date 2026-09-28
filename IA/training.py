@@ -38,7 +38,13 @@ class CustomTensorboardCallback(BaseCallback):
 
 def make_env(rank, stack_size=4):
     def _init():
-        env = AsteroidsEnv(render_mode="none")
+        env = AsteroidsEnv(
+            render_mode="none",
+            asteroidDestroyedReward = 1.0,
+            loseReward = -1.0,
+            winReward = 1.0,
+            laserMissReward = 0.0,
+        )
         env = FrameStackObservation(env, stack_size=stack_size)
         return Monitor(env)
     return _init
