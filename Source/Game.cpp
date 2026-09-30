@@ -132,7 +132,6 @@ void Game::RunLoop() {
 void Game::ApplyAction(Action action) {
     mSelectedAction = action;
     mWaitingForAction = false;
-    mFramesToProcess = 1;
 }
 
 void Game::ProcessInput() {

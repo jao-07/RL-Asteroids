@@ -14,12 +14,14 @@ Laser::Laser(Game* game, const float length, const float deathTimer)
         ,mLength(length)
         ,mDeathTimer(deathTimer)
 {
-    Vector2 v1 = Vector2(-mLength/2, 0);
-    Vector2 v2 = Vector2(mLength/2, 0);
+    Vector2 v1 = Vector2(-mLength/2, -mLength/2);
+    Vector2 v2 = Vector2(-mLength/2, mLength/2);
+    Vector2 v3 = Vector2(mLength/2, 0);
 
     std::vector<Vector2> verts;
     verts.push_back(v1);
     verts.push_back(v2);
+    verts.push_back(v3);
 
     mDrawComponent = new DrawComponent(this, verts);
     mRigidBodyComponent = new RigidBodyComponent(this, 0.1);

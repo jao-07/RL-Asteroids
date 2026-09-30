@@ -52,7 +52,7 @@ class AsteroidsEnv(gym.Env):
         self.observation_space = gym.spaces.Box(
             low=0,
             high=255,
-            shape=(128,128),
+            shape=(self.widthImage,self.heightImage),
             dtype=np.uint8
         )
 
