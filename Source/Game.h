@@ -111,7 +111,7 @@ private:
     Uint32 mPauseTime = 0;
 
     bool mWaitingForAction = true;
-    int mFramesToProcess = 10;
+    int mFramesToProcess = 4;
     Action mSelectedAction = Action::Nothing;
 
     void ApplyAction(Action action);
