@@ -25,7 +25,7 @@ Laser::Laser(Game* game, const float length, const float deathTimer)
     verts.push_back(v3);
 
     mDrawComponent = new DrawComponent(this, verts);
-    mRigidBodyComponent = new RigidBodyComponent(this, 0.1);
+    mRigidBodyComponent = new RigidBodyComponent(this, 0.3);
     mCircleColliderComponent = new CircleColliderComponent(this, mLength);
 }
 

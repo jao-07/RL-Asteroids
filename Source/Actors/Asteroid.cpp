@@ -25,19 +25,19 @@ Asteroid::Asteroid(Game* game, AsteroidSize size, Vector2 position, const int nu
     std::vector<Vector2> vertices;
 
     if (size == AsteroidSize::Large) {
-        vertices = GenerateVertices(numVertices, 80);
+        vertices = GenerateVertices(numVertices, 16);
         averageLength = CalculateAverageVerticesLength(vertices);
         Vector2 pos = Random::GetVector(Vector2::Zero, Vector2(mGame->GetWindowWidth(), mGame->GetWindowHeight()));
-        while (!(pos.y > (mGame->GetWindowHeight() - 200) || pos.y < 200))
+        while (!(pos.y > (mGame->GetWindowHeight() - 40) || pos.y < 40))
             pos = Random::GetVector(Vector2::Zero, Vector2(mGame->GetWindowWidth(), mGame->GetWindowHeight()));
         SetPosition(pos);
-        randStartingForce = GenerateRandomStartingForce(1000.0f, 1500.0f);
+        randStartingForce = GenerateRandomStartingForce(500.0f, 750.0f);
     }
     else {
-        vertices = GenerateVertices(numVertices, 40);
+        vertices = GenerateVertices(numVertices, 8);
         averageLength = CalculateAverageVerticesLength(vertices);
         SetPosition(position);
-        randStartingForce = GenerateRandomStartingForce(2000.0f, 2500.0f);
+        randStartingForce = GenerateRandomStartingForce(1000.0f, 1250.0f);
     }
 
     mDrawComponent = new DrawComponent(this, vertices);
