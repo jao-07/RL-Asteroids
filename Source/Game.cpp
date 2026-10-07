@@ -384,6 +384,11 @@ void Game::Shutdown()
         delete mActors.back();
     }
 
+    if (mObservationTexture) {
+        SDL_DestroyTexture(mObservationTexture);
+        mObservationTexture = nullptr;
+    }
+
     SDL_DestroyRenderer(mRenderer);
     SDL_DestroyWindow(mWindow);
     SDL_Quit();
@@ -582,17 +587,31 @@ std::tuple<float, bool, bool, std::tuple<bool, int, int, int, bool, float>> Game
 }
 
 std::vector<uint8_t> Game::GetImageObservation(int target_w, int target_h) {
-    SDL_Texture* target_texture = SDL_CreateTexture(
-        mRenderer,
-        SDL_PIXELFORMAT_RGBA8888,
-        SDL_TEXTUREACCESS_TARGET,
-        target_w,
-        target_h
-    );
+    if (!mObservationTexture || mObsWidth != target_w || mObsHeight != target_h) {
+        if (mObservationTexture) {
+            SDL_DestroyTexture(mObservationTexture);
+        }
+        mObservationTexture = SDL_CreateTexture(
+            mRenderer,
+            SDL_PIXELFORMAT_RGBA8888,
+            SDL_TEXTUREACCESS_TARGET,
+            target_w,
+            target_h
+        );
+        SDL_SetTextureScaleMode(mObservationTexture, SDL_ScaleModeLinear);
+        mObsWidth = target_w;
+        mObsHeight = target_h;
+    }
 
-    SDL_SetTextureScaleMode(target_texture, SDL_ScaleModeLinear);
+    if (!mObservationTexture) {
+        return std::vector<uint8_t>(target_w * target_h, 0);
+    }
 
-    SDL_SetRenderTarget(mRenderer, target_texture);
+    SDL_SetRenderTarget(mRenderer, mObservationTexture);
+
+    SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
+    SDL_RenderClear(mRenderer);
+
     float scale_x = static_cast<float>(target_w) / mWindowWidth;
     float scale_y = static_cast<float>(target_h) / mWindowHeight;
 
@@ -608,9 +627,8 @@ std::vector<uint8_t> Game::GetImageObservation(int target_w, int target_h) {
         target_w * sizeof(uint32_t)
     );
 
-    SDL_SetRenderTarget(mRenderer, nullptr);
     SDL_RenderSetScale(mRenderer, 1.0f, 1.0f);
-    SDL_DestroyTexture(target_texture);
+    SDL_SetRenderTarget(mRenderer, nullptr);
 
     std::vector<uint8_t> single_channel_pixels(target_w * target_h);
     for (int i = 0; i < target_w * target_h; ++i) {

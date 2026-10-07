@@ -144,4 +144,7 @@ private:
 
     std::vector<float> GetObservationSpace() const;
     float CalculateReward();
+    SDL_Texture* mObservationTexture = nullptr;
+    int mObsWidth = 0;
+    int mObsHeight = 0;
 };
