@@ -28,15 +28,14 @@ PYBIND11_MODULE(asteroids_cpp, m) {
         //         pixels.data()     // Ponteiro para o início dos dados
         //     );
         // })
-    .def("get_screen_pixels", [](Game& game, int w = 84, int h = 84) {
-        std::vector<uint8_t> pixels = game.GetImageObservation(w, h);
+        .def("get_screen_pixels", [](Game& game, int w, int h) {
+            std::vector<uint8_t> pixels = game.GetImageObservation(w, h);
+            py::array_t<uint8_t> result({1, h, w});
 
-        return py::array_t<uint8_t>(
-            {1, h, w},        // Shape dinâmico: (1, height, width)
-            {h * w, w, 1},    // Strides correspondentes
-            pixels.data()
-        );
-        }, py::arg("w") = 84, py::arg("h") = 84)
+            py::buffer_info buf = result.request();
+            std::memcpy(buf.ptr, pixels.data(), pixels.size() * sizeof(uint8_t));
+            return result;
+        })
 
         .def_readonly("m_steps_done", &Game::mStepsDone);
 }
