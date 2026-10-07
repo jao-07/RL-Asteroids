@@ -30,8 +30,8 @@ Game::Game(
         :mVisualize(visualize)
         ,mWindow(nullptr)
         ,mRenderer(nullptr)
-        ,mWindowWidth(1024)
-        ,mWindowHeight(768)
+        ,mWindowWidth(160)
+        ,mWindowHeight(160)
         ,mTicksCount(0)
         ,mIsRunning(true)
         ,mUpdatingActors(false)
@@ -96,7 +96,7 @@ void Game::CreateAsteroids() {
 
 void Game::InitializeActors()
 {
-    mShip = new Ship(this, 20);
+    mShip = new Ship(this, 7);
     mShip->SetPosition(Vector2(mWindowWidth / 2.0f, mWindowHeight / 2.0f));
     
     CreateAsteroids();
