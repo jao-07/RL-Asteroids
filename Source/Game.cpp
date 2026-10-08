@@ -260,7 +260,7 @@ void Game::RemoveAsteroid(Asteroid* ast)
         bool isLarge = (ast->GetSize() == AsteroidSize::Large);
 
         ast->SetState(ActorState::Destroy);
-        CreateParticles(ast, 600, 1000);
+        //CreateParticles(ast, 600, 1000);
 
         // std::iter_swap(iter, mAsteroids.end() - 1);
         // mAsteroids.pop_back();
@@ -275,7 +275,7 @@ void Game::RemoveAsteroid(Asteroid* ast)
         mAsteroidDestroyed = true;
         mCurrentAsteroidsNumber--;
     }
-    else
+    else if (ast->GetState() != ActorState::Destroy)
         SDL_Log("Attempting to remove asteroid not in list");
 }
 
@@ -379,10 +379,7 @@ void Game::GenerateOutput()
 
 void Game::Shutdown()
 {
-    while (!mActors.empty())
-    {
-        delete mActors.back();
-    }
+    DeleteActors();
 
     if (mObservationTexture) {
         SDL_DestroyTexture(mObservationTexture);
@@ -395,13 +392,18 @@ void Game::Shutdown()
 }
 
 void Game::DeleteActors() {
-    if (mActors.empty()) return;
-    for (int i = mActors.size()-1; i >= 0; i--) {
-        mActors[i]->SetState(ActorState::Destroy);
-        mActors.pop_back();
-    }
-    mDrawables.clear();
     mAsteroids.clear();
+    while (!mPendingActors.empty()) {
+        mPendingActors.back()->SetState(ActorState::Destroy);
+        delete mPendingActors.back();
+    }
+    while (!mActors.empty()) {
+        mActors.back()->SetState(ActorState::Destroy);
+        delete mActors.back();
+    }
+    mCurrentAsteroidsNumber = 0;
+    mShip = nullptr;
+    mDrawables.clear();
 }
 
 void Game::Reset() {
@@ -439,7 +441,7 @@ std::vector<float> Game::GetObservationSpace() const {
     states.emplace_back(mShip->GetLaserCoolDown() / MAX_LASER_COOLDOWN);
 
     for (int i = 0; i < asteroidsInObs; i++) {
-        if (mAsteroids[i] != nullptr) {
+        if (i < static_cast<int>(mAsteroids.size()) && mAsteroids[i] != nullptr) {
             float dx = GetWrappedDelta(mShip->GetPosition().x, mAsteroids[i]->GetPosition().x, static_cast<float>(mWindowWidth)) / (static_cast<float>(mWindowWidth) / 2.0f);
             float dy = GetWrappedDelta(mShip->GetPosition().y, mAsteroids[i]->GetPosition().y, static_cast<float>(mWindowHeight)) / (static_cast<float>(mWindowHeight) / 2.0f);
             float distance = std::sqrt(dx * dx + dy * dy);
