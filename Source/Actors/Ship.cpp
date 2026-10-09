@@ -26,10 +26,10 @@ Ship::Ship(Game* game,
         , mFrictionCoefficient(frictionCoefficient)
         ,mTotalLaserCooldown(totalLaserCooldown)
 {
-    Vector2 vert1 = Vector2(-mHeight/2, mHeight/1.5);
-    Vector2 vert2 = Vector2(mHeight, 0);
-    Vector2 vert3 = Vector2(-mHeight/2, -mHeight/1.5);
-    Vector2 vert4 = Vector2(-mHeight/4, 0);
+    Vector2 vert1 = Vector2(0, 0);
+    Vector2 vert2 = Vector2(-mHeight/2, mHeight/1.5);
+    Vector2 vert3 = Vector2(mHeight, 0);
+    Vector2 vert4 = Vector2(-mHeight/2, -mHeight/1.5);
 
     std::vector<Vector2> verts;
     verts.push_back(vert1);
@@ -67,7 +67,7 @@ void Ship::OnProcessInput(Action action)
     }
 
     if ((action == Action::Shoot) && (mCurrentLaserCooldown <= 0.0f)) {
-        auto* l = new Laser(this->mGame, 5);
+        auto* l = new Laser(this->mGame, 3);
         l->SetPosition(this->mPosition + GetForward() * mHeight);
         l->SetRotation(this->mRotation);
         l->GetComponent<RigidBodyComponent>()->ApplyForce(GetForward() * 12000.f);
