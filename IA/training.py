@@ -59,7 +59,7 @@ if __name__ == "__main__":
     os.makedirs(OS_CHECKPOINT_DIR, exist_ok=True)
 
     checkpoint_callback = CheckpointCallback(
-        save_freq=max(10000, 100000 // num_envs),
+        save_freq=100000,
         save_path=OS_CHECKPOINT_DIR,
         name_prefix="2M_84px",
         save_replay_buffer=False,
@@ -86,11 +86,20 @@ if __name__ == "__main__":
     #     verbose=1,
     #     tensorboard_log="./tensorBoardFiles/"
     # )
-    OS_MODEL_DIR = "models/model_cnn_teste_cpu.zip"
-    modelo_ppo = PPO.load(OS_MODEL_DIR, env=env)
+    OS_MODEL_DIR = "models/CNN_6M_84px.zip"
+    modelo_ppo = PPO.load(
+        OS_MODEL_DIR,
+        env=env,
+        custom_objects={
+            "n_steps": 1024,
+            "batch_size": 512,
+            "n_epochs": 4,
+            "ent_coef": 0.0001
+        }
+    )
 
     modelo_ppo.learn(
-        total_timesteps=1900000,
+        total_timesteps=3000000,
         tb_log_name="CNN_2M_84px",
         callback=callback,
         reset_num_timesteps=False,
@@ -99,5 +108,5 @@ if __name__ == "__main__":
 
     MODELS_DIR = Path("models")
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
-    path = MODELS_DIR / "CNN_2M_84px"
+    path = MODELS_DIR / "CNN_9M_84px"
     modelo_ppo.save(path)

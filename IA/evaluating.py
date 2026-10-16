@@ -16,7 +16,7 @@ env = FrameStackObservation(env, stack_size=4)
 print("Carregando o modelo treinado...")
 
 MODELS_DIR = Path("models")
-path = MODELS_DIR / "CNN_2M_84px"
+path = MODELS_DIR / "CNN_6M_84px"
 model = PPO.load(path)
 
 obs, _ = env.reset()
