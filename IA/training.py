@@ -43,29 +43,31 @@ class CustomTensorboardCallback(BaseCallback):
 
 def make_env(rank, stack_size=4):
     def _init():
-        env = AsteroidsEnv(render_mode="none")
+        env = AsteroidsEnv(
+            render_mode="none",
+            asteroidDestroyedReward = 1.0,
+            loseReward = -1.0,
+            winReward = 1.0,
+            laserMissReward = -0.05,
+            timeReward = -0.01,
+        )
         env = Monitor(env)
         env = FrameStackObservation(env, stack_size=stack_size)
         return env
     return _init
-
-def linear_schedule(initial_value: float):
-    def func(progress_remaining: float) -> float:
-        return progress_remaining * initial_value
-    return func
 
 if __name__ == "__main__":
 
     num_envs = 4
     env = SubprocVecEnv([make_env(i) for i in range(num_envs)])
 
-    OS_CHECKPOINT_DIR = "Checkpoints/CNN_84px"
+    OS_CHECKPOINT_DIR = "Checkpoints/FT_Mod_Rew"
     os.makedirs(OS_CHECKPOINT_DIR, exist_ok=True)
 
     checkpoint_callback = CheckpointCallback(
         save_freq=100000,
         save_path=OS_CHECKPOINT_DIR,
-        name_prefix="CNN_84px",
+        name_prefix="FT_Mod_Rew",
         save_replay_buffer=False,
         save_vecnormalize=False,
         verbose=1
@@ -78,29 +80,25 @@ if __name__ == "__main__":
         tensorboard_callback
     ])
 
-    modelo_ppo = PPO(
-        "CnnPolicy",
-        env,
-        learning_rate=linear_schedule(1e-4),
-        n_steps=2048,
-        batch_size=256,
-        n_epochs=4,
-        gamma=0.99,
-        gae_lambda=0.95,
-        ent_coef=0.0005,
-        verbose=1,
-        tensorboard_log="./tensorBoardFiles/"
-    )
-    OS_MODEL_DIR = "models/CNN_4M_84px.zip"
-    # modelo_ppo = PPO.load(
-    #     OS_MODEL_DIR,
-    #     env=env,
-    #     device="cpu",
+    # modelo_ppo = PPO(
+    #     "CnnPolicy",
+    #     env,
+    #     learning_rate=1e-4,
+    #     n_steps=1024,
+    #     batch_size=512,
+    #     n_epochs=4,
+    #     gamma=0.99,
+    #     gae_lambda=0.95,
+    #     ent_coef=0.0005,
+    #     verbose=1,
+    #     tensorboard_log="./tensorBoardFiles/"
     # )
-    OS_MODEL_DIR = "models/CNN_6M_84px.zip"
+
+    OS_MODEL_DIR = "models/CNN_11M_FT_84px.zip"
     modelo_ppo = PPO.load(
         OS_MODEL_DIR,
         env=env,
+        device="cpu",
         custom_objects={
             "n_steps": 1024,
             "batch_size": 512,
@@ -110,8 +108,8 @@ if __name__ == "__main__":
     )
 
     modelo_ppo.learn(
-        total_timesteps=3000000,
-        tb_log_name="CNN_2M_84px",
+        total_timesteps=2000000,
+        tb_log_name="FT_Mod_Rew",
         callback=callback,
         reset_num_timesteps=False,
         progress_bar=True
@@ -119,5 +117,5 @@ if __name__ == "__main__":
 
     MODELS_DIR = Path("models")
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
-    path = MODELS_DIR / "CNN_9M_84px"
+    path = MODELS_DIR / "CNN_13M_FT_84px"
     modelo_ppo.save(path)
