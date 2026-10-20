@@ -4,6 +4,7 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/numpy.h>
 #include "Game.h"
 
 namespace py = pybind11;
@@ -16,6 +17,25 @@ PYBIND11_MODULE(asteroids_cpp, m) {
         .def("shutdown", &Game::Shutdown)
         .def("step", &Game::Step)
         .def("reset", &Game::Reset)
+        // .def("get_screen_pixels", [](Game& game) {
+        //     int w = 84;
+        //     int h = 84;
+        //
+        //     std::vector<uint8_t> pixels = game.GetImageObservation(w, h);
+        //     return py::array_t<uint8_t>(
+        //         {1, h, w},        // Shape: 1 Canal, 84 Altura, 84 Largura
+        //         {h * w, w, 1},    // Strides de memória
+        //         pixels.data()     // Ponteiro para o início dos dados
+        //     );
+        // })
+        .def("get_screen_pixels", [](Game& game, int w, int h) {
+            std::vector<uint8_t> pixels = game.GetImageObservation(w, h);
+            py::array_t<uint8_t> result({1, h, w});
+
+            py::buffer_info buf = result.request();
+            std::memcpy(buf.ptr, pixels.data(), pixels.size() * sizeof(uint8_t));
+            return result;
+        })
 
         .def_readonly("m_steps_done", &Game::mStepsDone);
 }

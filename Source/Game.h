@@ -57,10 +57,12 @@ public:
     void AddAsteroid(class Asteroid* ast);
     void RemoveAsteroid(class Asteroid* ast);
     std::vector<class Asteroid*>& GetAsteroids() { return mAsteroids; }
-    std::vector<float> Reset();
+    void Reset();
 
     //void SetAsteroidDestroyed(bool destroyed);
-    std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int, bool, float>> Step(int action);
+    std::tuple<float, bool, bool, std::tuple<bool, int, int, int, bool, float>> Step(int action);
+
+    std::vector<uint8_t> GetImageObservation(int target_w = 84, int target_h = 84);
 
     void SetLasersMissed(bool state) { mLaserMissedInTheStep = state; }
     void IncreaseLasersHit() {mLasersHit++;}
@@ -74,6 +76,7 @@ public:
 private:
     void ProcessInput();
     void UpdateGame();
+    void RenderScene();
     void GenerateOutput();
     void DeleteActors();
 
@@ -108,7 +111,7 @@ private:
     Uint32 mPauseTime = 0;
 
     bool mWaitingForAction = true;
-    int mFramesToProcess = 0;
+    int mFramesToProcess = 4;
     Action mSelectedAction = Action::Nothing;
 
     void ApplyAction(Action action);
@@ -141,4 +144,7 @@ private:
 
     std::vector<float> GetObservationSpace() const;
     float CalculateReward();
+    SDL_Texture* mObservationTexture = nullptr;
+    int mObsWidth = 0;
+    int mObsHeight = 0;
 };

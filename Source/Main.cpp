@@ -23,7 +23,7 @@
 
 int main(int argc, char** argv)
 {
-    auto game = Game(true, 1);
+    auto game = Game(true);
 
     if (game.Initialize())
     {
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
             // int acaoSimulada = Random::GetIntRange(0,5);
             // # Ações Discretas(0: Dir, 1: Esq, 2: Tiro, 3: Frente, 4: Nada)
             int acaoSimulada = 2;
-            auto [obs, reward, terminated, truncated, stats] = game.Step(acaoSimulada);
+            auto [reward, terminated, truncated, stats] = game.Step(acaoSimulada);
             
             totalReward += reward;
 

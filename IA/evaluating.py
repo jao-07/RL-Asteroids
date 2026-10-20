@@ -1,14 +1,23 @@
 from stable_baselines3 import PPO
 from asteroids_env import AsteroidsEnv
 from pathlib import Path
+from gymnasium.wrappers import FrameStackObservation
 
 print("Carregando o ambiente com interface gráfica...")
-env = AsteroidsEnv(render_mode="human")
+env = AsteroidsEnv(
+    render_mode="human",
+    asteroidDestroyedReward = 1.0,
+    loseReward = -1.0,
+    winReward = 1.0,
+    laserMissReward = -0.05,
+    timeReward = -0.01
+)
+env = FrameStackObservation(env, stack_size=4)
 
 print("Carregando o modelo treinado...")
 
 MODELS_DIR = Path("models")
-path = MODELS_DIR / "ppo_10ast_2obs"
+path = MODELS_DIR / "CNN_13M_FT_84px"
 model = PPO.load(path)
 
 obs, _ = env.reset()

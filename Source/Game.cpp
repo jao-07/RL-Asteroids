@@ -30,8 +30,8 @@ Game::Game(
         :mVisualize(visualize)
         ,mWindow(nullptr)
         ,mRenderer(nullptr)
-        ,mWindowWidth(1024)
-        ,mWindowHeight(768)
+        ,mWindowWidth(160)
+        ,mWindowHeight(160)
         ,mTicksCount(0)
         ,mIsRunning(true)
         ,mUpdatingActors(false)
@@ -96,7 +96,7 @@ void Game::CreateAsteroids() {
 
 void Game::InitializeActors()
 {
-    mShip = new Ship(this, 20);
+    mShip = new Ship(this, 7);
     mShip->SetPosition(Vector2(mWindowWidth / 2.0f, mWindowHeight / 2.0f));
     
     CreateAsteroids();
@@ -119,8 +119,8 @@ void Game::InitializeActors()
 void Game::RunLoop() {
     Reset();
     while (mIsRunning) {
-        auto [obs, reward, terminated, truncated, stats] = Step(1);
-        auto [obs2, reward2, terminated2, truncated2, stats2] = Step(2);
+        auto [reward, terminated, truncated, stats] = Step(1);
+        auto [reward2, terminated2, truncated2, stats2] = Step(2);
 
         if (terminated or terminated2 or truncated or truncated2) {
             Reset();
@@ -132,7 +132,6 @@ void Game::RunLoop() {
 void Game::ApplyAction(Action action) {
     mSelectedAction = action;
     mWaitingForAction = false;
-    mFramesToProcess = 1;
 }
 
 void Game::ProcessInput() {
@@ -155,29 +154,6 @@ void Game::ProcessInput() {
         // }
     }
 }
-
-// void Game::ProcessInput()
-// {
-//
-//     SDL_Event event;
-//     while (SDL_PollEvent(&event))
-//     {
-//         switch (event.type)
-//         {
-//             case SDL_QUIT:
-//                 Quit();
-//                 break;
-//         }
-//     }
-//
-//     const Uint8* state = SDL_GetKeyboardState(nullptr);
-//     mUpdatingActors = true;
-//     for (auto actor : mActors)
-//     {
-//         actor->ProcessInput(state);
-//     }
-//     mUpdatingActors = false;
-// }
 
 void Game::UpdateGame() {
     for (int i=mFramesToProcess; i>0; i--){
@@ -284,7 +260,7 @@ void Game::RemoveAsteroid(Asteroid* ast)
         bool isLarge = (ast->GetSize() == AsteroidSize::Large);
 
         ast->SetState(ActorState::Destroy);
-        CreateParticles(ast, 600, 1000);
+        //CreateParticles(ast, 600, 1000);
 
         // std::iter_swap(iter, mAsteroids.end() - 1);
         // mAsteroids.pop_back();
@@ -299,7 +275,7 @@ void Game::RemoveAsteroid(Asteroid* ast)
         mAsteroidDestroyed = true;
         mCurrentAsteroidsNumber--;
     }
-    else
+    else if (ast->GetState() != ActorState::Destroy)
         SDL_Log("Attempting to remove asteroid not in list");
 }
 
@@ -379,7 +355,7 @@ void Game::RemoveDrawable(class DrawComponent *drawable)
     mDrawables.erase(iter);
 }
 
-void Game::GenerateOutput()
+void Game::RenderScene()
 {
     // Set draw color to black
     SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
@@ -391,6 +367,11 @@ void Game::GenerateOutput()
     {
         drawable->Draw(mRenderer);
     }
+}
+
+void Game::GenerateOutput()
+{
+    RenderScene();
 
     // Swap front buffer and back buffer
     SDL_RenderPresent(mRenderer);
@@ -398,9 +379,11 @@ void Game::GenerateOutput()
 
 void Game::Shutdown()
 {
-    while (!mActors.empty())
-    {
-        delete mActors.back();
+    DeleteActors();
+
+    if (mObservationTexture) {
+        SDL_DestroyTexture(mObservationTexture);
+        mObservationTexture = nullptr;
     }
 
     SDL_DestroyRenderer(mRenderer);
@@ -409,24 +392,27 @@ void Game::Shutdown()
 }
 
 void Game::DeleteActors() {
-    if (mActors.empty()) return;
-    for (int i = mActors.size()-1; i >= 0; i--) {
-        mActors[i]->SetState(ActorState::Destroy);
-        mActors.pop_back();
-    }
-    mDrawables.clear();
     mAsteroids.clear();
+    while (!mPendingActors.empty()) {
+        mPendingActors.back()->SetState(ActorState::Destroy);
+        delete mPendingActors.back();
+    }
+    while (!mActors.empty()) {
+        mActors.back()->SetState(ActorState::Destroy);
+        delete mActors.back();
+    }
+    mCurrentAsteroidsNumber = 0;
+    mShip = nullptr;
+    mDrawables.clear();
 }
 
-std::vector<float> Game::Reset() {
+void Game::Reset() {
     DeleteActors();
     mCurrentAsteroidsNumber = 0;
     InitializeActors();
     mStepsDone = 0;
     mLasersHit = 0;
     mLasersFired = 0;
-
-    return GetObservationSpace();
 }
 
 /* 0: Pos x da nave
@@ -455,7 +441,7 @@ std::vector<float> Game::GetObservationSpace() const {
     states.emplace_back(mShip->GetLaserCoolDown() / MAX_LASER_COOLDOWN);
 
     for (int i = 0; i < asteroidsInObs; i++) {
-        if (mAsteroids[i] != nullptr) {
+        if (i < static_cast<int>(mAsteroids.size()) && mAsteroids[i] != nullptr) {
             float dx = GetWrappedDelta(mShip->GetPosition().x, mAsteroids[i]->GetPosition().x, static_cast<float>(mWindowWidth)) / (static_cast<float>(mWindowWidth) / 2.0f);
             float dy = GetWrappedDelta(mShip->GetPosition().y, mAsteroids[i]->GetPosition().y, static_cast<float>(mWindowHeight)) / (static_cast<float>(mWindowHeight) / 2.0f);
             float distance = std::sqrt(dx * dx + dy * dy);
@@ -572,10 +558,10 @@ float Game::CalculateReward() {
     return reward;
 }
 
-std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int, bool, float>> Game::Step(int action) {
+std::tuple<float, bool, bool, std::tuple<bool, int, int, int, bool, float>> Game::Step(int action) {
     mAsteroidDestroyed = false;
     mLaserMissedInTheStep = false;
-    orderAsteroids();
+    // orderAsteroids();
     ApplyAction(static_cast<Action>(action));
 
     ProcessInput();
@@ -596,15 +582,60 @@ std::tuple<std::vector<float>, float, bool, bool, std::tuple<bool, int, int, int
         std::get<4>(stats) = mCurrentAsteroidsNumber == 0;
         std::get<5>(stats) = static_cast<float>(mLasersHit) / static_cast<float>(mLasersFired);
     }
-    std::vector<float> obs = GetObservationSpace();
     float reward = CalculateReward();
-    std::tuple tuple = std::make_tuple(obs, reward, terminated, truncated, stats);
-    // for (int i=0; i<mAsteroids.size(); i++) {
-    //     if (mAsteroids[i] != nullptr)
-    //         SDL_Log("%d: (%f.1,%f.1)", i, mAsteroids[i]->GetPosition().x, mAsteroids[i]->GetPosition().x);
-    //     else
-    //         SDL_Log("%d: Destruido", i);
-    // }
+    std::tuple tuple = std::make_tuple(reward, terminated, truncated, stats);
 
     return tuple;
+}
+
+std::vector<uint8_t> Game::GetImageObservation(int target_w, int target_h) {
+    if (!mObservationTexture || mObsWidth != target_w || mObsHeight != target_h) {
+        if (mObservationTexture) {
+            SDL_DestroyTexture(mObservationTexture);
+        }
+        mObservationTexture = SDL_CreateTexture(
+            mRenderer,
+            SDL_PIXELFORMAT_RGBA8888,
+            SDL_TEXTUREACCESS_TARGET,
+            target_w,
+            target_h
+        );
+        SDL_SetTextureScaleMode(mObservationTexture, SDL_ScaleModeLinear);
+        mObsWidth = target_w;
+        mObsHeight = target_h;
+    }
+
+    if (!mObservationTexture) {
+        return std::vector<uint8_t>(target_w * target_h, 0);
+    }
+
+    SDL_SetRenderTarget(mRenderer, mObservationTexture);
+
+    SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
+    SDL_RenderClear(mRenderer);
+
+    float scale_x = static_cast<float>(target_w) / mWindowWidth;
+    float scale_y = static_cast<float>(target_h) / mWindowHeight;
+
+    SDL_RenderSetScale(mRenderer, scale_x, scale_y);
+    RenderScene();
+
+    std::vector<uint32_t> rgba_pixels(target_w * target_h);
+    SDL_RenderReadPixels(
+        mRenderer,
+        nullptr,
+        SDL_PIXELFORMAT_RGBA8888,
+        rgba_pixels.data(),
+        target_w * sizeof(uint32_t)
+    );
+
+    SDL_RenderSetScale(mRenderer, 1.0f, 1.0f);
+    SDL_SetRenderTarget(mRenderer, nullptr);
+
+    std::vector<uint8_t> single_channel_pixels(target_w * target_h);
+    for (int i = 0; i < target_w * target_h; ++i) {
+        single_channel_pixels[i] = static_cast<uint8_t>((rgba_pixels[i] >> 24) & 0xFF);
+    }
+
+    return single_channel_pixels;
 }
